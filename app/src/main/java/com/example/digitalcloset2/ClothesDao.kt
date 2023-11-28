@@ -15,8 +15,8 @@ interface ClothesDao {
     @Query("SELECT * FROM ClothesData")
     fun loadAllClothes():Flow<List<ClothesData>>
 
-    @Query("SELECT ClothesName FROM ClothesData")
-    fun loadNameClothes():Flow<List<String>>
+    @Query("SELECT ClothesName,ClothesImage FROM ClothesData")
+    fun loadNameClothes():Flow<List<CardData>>
 
     @Update
     suspend fun updateClothes(clothes: ClothesData)

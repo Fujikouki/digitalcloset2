@@ -7,9 +7,9 @@ import androidx.room.PrimaryKey
 @Entity
 data class ClothesData(
     @PrimaryKey(autoGenerate = true)val id:Int = 0,
-    val ClothesName:String,
-    val ClothesType:String,
-    val ClothesColor: String,
-    val ClothesScene:String,
-    val ClothesImage:String,
+    var ClothesName:String,
+    var ClothesType:String,
+    var ClothesColor: String,
+    var ClothesScene:String,
+    var ClothesImage:String,
 )
