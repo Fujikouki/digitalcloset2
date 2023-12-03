@@ -26,6 +26,8 @@ class mainviewmodel @Inject constructor(private val clothesDao: ClothesDao):View
     var ClothesScene:String by mutableStateOf("")
     var ClothesImage:String by mutableStateOf("")
 
+    var isUpdate:Boolean = false
+
     var editingClothe:ClothesData? = null
     val isEditing:Boolean
         get() = editingClothe != null
@@ -60,6 +62,7 @@ class mainviewmodel @Inject constructor(private val clothesDao: ClothesDao):View
         ClothesColor = cloth.ClothesColor
         ClothesScene = cloth.ClothesScene
         ClothesImage = cloth.ClothesImage
+
     }
 
     fun updateCloth(){
@@ -73,6 +76,5 @@ class mainviewmodel @Inject constructor(private val clothesDao: ClothesDao):View
                 clothesDao.updateClothes(clothes = cloth)
             }
         }
-
     }
 }

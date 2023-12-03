@@ -23,20 +23,35 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.digitalcloset2.mainviewmodel
+import java.lang.StringBuilder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Dialog(mainviewmodel: mainviewmodel = hiltViewModel()){
     AlertDialog(
-        onDismissRequest = {mainviewmodel.flag = false },
+        onDismissRequest = {
+            mainviewmodel.flag = false
+            mainviewmodel.isUpdate = false
+                           },
         title = { Text(text = "タイトル")},
         text = {
                Column {
                    Text(text = "服の名前")
                    TextField(value = mainviewmodel.ClothesName , onValueChange = { mainviewmodel.ClothesName = it})
-                   ExposedDropdownMenuSample(_title = "服の種類", _list = listOf("Top", "Bottom", "Dress", "Jacket",)){selectionOption -> mainviewmodel.ClothesType = selectionOption}
-                   ExposedDropdownMenuSample(_title = "服の色", _list = listOf("Red", "Blue", "Green", "Black", "White",)){selectionOption -> mainviewmodel.ClothesColor = selectionOption}
-                   ExposedDropdownMenuSample(_title = "シーズン", _list = listOf("Casual","Formal","Party","Workout",)){selectionOption -> mainviewmodel.ClothesScene = selectionOption}
+                   ExposedDropdownMenuSample(
+                       _title = "服の種類",
+                       _list = listOf("Top", "Bottom", "Dress", "Jacket",), v = mainviewmodel.ClothesType){
+                           selectionOption -> mainviewmodel.ClothesType = selectionOption
+                   }
+                   ExposedDropdownMenuSample(
+                       _title = "服の色", _list = listOf("Red", "Blue", "Green", "Black", "White",),v = mainviewmodel.ClothesColor){
+                           selectionOption -> mainviewmodel.ClothesColor = selectionOption
+                   }
+                   ExposedDropdownMenuSample(
+                       _title = "シーズン",
+                       _list = listOf("Casual","Formal","Party","Workout",),v = mainviewmodel.ClothesScene){
+                           selectionOption -> mainviewmodel.ClothesScene = selectionOption
+                   }
                    TextButton(onClick = { mainviewmodel.ClothesImage = "image1" + mainviewmodel.ClothesName}) {
                        Text(text = "写真を追加")
                    }
@@ -45,14 +60,19 @@ fun Dialog(mainviewmodel: mainviewmodel = hiltViewModel()){
         confirmButton = {
             Button(onClick = {
                 mainviewmodel.flag = false
+                mainviewmodel.isUpdate = false
                 mainviewmodel.createCloth()
             })
             {
                 Text(text = "保存")
-            } },
+            }
+                        },
 
         dismissButton = {
-            Button(onClick = { mainviewmodel.flag = false }) {
+            Button(onClick = {
+                mainviewmodel.flag = false
+                mainviewmodel.isUpdate = false
+            }) {
                 Text(text = "キャンセル")
             }
         }
@@ -61,11 +81,16 @@ fun Dialog(mainviewmodel: mainviewmodel = hiltViewModel()){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExposedDropdownMenuSample(_title:String,_list:List<String>,onItemSelected: (String) -> Unit) {
+fun ExposedDropdownMenuSample(_title:String,_list:List<String>,v:String,onItemSelected: (String) -> Unit) {
+    val mainviewmodel:mainviewmodel = hiltViewModel()
     val options = _list
     val title:String = _title
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember { mutableStateOf(options[0]) }
+    if(mainviewmodel.isUpdate){
+        selectedOptionText =  v
+    }
+
 
     ExposedDropdownMenuBox(
         expanded = expanded,

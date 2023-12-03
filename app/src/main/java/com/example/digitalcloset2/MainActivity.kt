@@ -72,6 +72,7 @@ fun mainui(mainviemodel: mainviewmodel = hiltViewModel()){
             onClickRow = { 
                 mainviemodel.setEditing(it)
                 mainviemodel.flag = true
+                mainviemodel.isUpdate = true
                          },
             onClickDelete = { mainviemodel.deleteCloth(it)}
         )
