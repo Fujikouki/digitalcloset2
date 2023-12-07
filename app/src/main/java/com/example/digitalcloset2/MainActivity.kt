@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -60,10 +61,13 @@ fun mainui(mainviemodel: mainviewmodel = hiltViewModel(),permission: Camera = Ca
     val camera = permission
 
     if(camera.PermissionTest()){
+        val context = LocalContext.current
+        camera.startCamera(context)
         Log.d("permission",camera.PermissionTest().toString())
     }else{
         Log.d("permission","使えない")
     }
+
 
 
     if (mainviemodel.flag){
