@@ -44,6 +44,8 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     mainui()
+                    val camera = Camera()
+                    camera.PermissionTest()
 
                 }
             }
@@ -56,19 +58,7 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun mainui(mainviemodel: mainviewmodel = hiltViewModel(),permission: Camera = Camera()){
-
-    val camera = permission
-
-    if(camera.PermissionTest()){
-        val context = LocalContext.current
-        camera.startCamera(context)
-        Log.d("permission",camera.PermissionTest().toString())
-    }else{
-        Log.d("permission","使えない")
-    }
-
-
+fun mainui(mainviemodel: mainviewmodel = hiltViewModel()){
 
     if (mainviemodel.flag){
         Dialog()
@@ -78,6 +68,7 @@ fun mainui(mainviemodel: mainviewmodel = hiltViewModel(),permission: Camera = Ca
             Icon(imageVector = Icons.Default.Add, contentDescription = "Clothesadd")
         }
     }) {
+
         val cloths by mainviemodel.cloths.collectAsState(initial = emptyList())
         val clothName by mainviemodel.clothsName.collectAsState(initial = emptyList())
 

@@ -1,63 +1,99 @@
 package com.example.digitalcloset2
 
-import android.content.Context
 import android.util.Log
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.widget.LinearLayout
+import androidx.camera.view.LifecycleCameraController
+import androidx.camera.view.PreviewView
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.core.content.ContextCompat
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import java.math.MathContext
 
 class Camera {
 
     @OptIn(ExperimentalPermissionsApi::class)
     @Composable
-    fun PermissionTest():Boolean{
+    fun PermissionTest(){
         val permissionState: PermissionState = rememberPermissionState(permission = android.Manifest.permission.CAMERA)
-
-        return permissionState.status.isGranted
+        MainContent(
+            hasPermission = permissionState.status.isGranted,
+            onRequestPermission = permissionState::launchPermissionRequest )
     }
 
-    fun startCamera(context: Context) {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+    @Composable
+    fun MainContent(hasPermission:Boolean,onRequestPermission:()-> Unit){
+        if(hasPermission){
+            CameraStert()
+        }else{
+            Log.d("カメラ",onRequestPermission.toString())
+            noPermission(onRequestPermission)
+        }
+    }
 
-        cameraProviderFuture.addListener({
-            // Used to bind the lifecycle of cameras to the lifecycle owner
-            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            // Preview
-            /*val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
-                }*/
-
-            // Select back camera as a default
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-            try {
-                // Unbind use cases before rebinding
-                cameraProvider.unbindAll()
-
-                // Bind use cases to camera
-                /*cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview)*/
-
-            } catch(exc: Exception) {
-                Log.e("エラー", "Use case binding failed", exc)
+    @Composable
+    fun noPermission(onRequestPermission: () -> Unit){
+        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
+            Text(text = "カメラをONにしてください")
+            Button(onClick = {
+                onRequestPermission
+                Log.d("Button","押した")
+            }) {
+                Text(text = "0N")
             }
+        }
+    }
 
-        }, ContextCompat.getMainExecutor(context))
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun CameraStert(){
+        val context = LocalContext.current
+        val lifecycleOwer = LocalLifecycleOwner.current
+        val cameraController = remember {
+            LifecycleCameraController(context)
+        }
+
+        Scaffold(modifier = Modifier.fillMaxSize()) {paddingValues:PaddingValues ->
+            AndroidView(
+                modifier = Modifier.padding(paddingValues),
+                factory = { context ->
+                PreviewView(context).apply {
+                    layoutParams = LinearLayout.LayoutParams(MATCH_PARENT,MATCH_PARENT)
+                    scaleType = PreviewView.ScaleType.FILL_START
+                }.also {previewView ->
+                    previewView.controller = cameraController
+                    cameraController.bindToLifecycle(lifecycleOwer)
+                }
+            })
+        }
     }
 
 
 
-
-
-
-
+    @Preview
+    @Composable
+    fun test(){
+        noPermission(onRequestPermission = {})
+    }
+    
 }
