@@ -55,10 +55,7 @@ class Camera {
     fun noPermission(onRequestPermission: () -> Unit){
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
             Text(text = "カメラをONにしてください")
-            Button(onClick = {
-                onRequestPermission
-                Log.d("Button","押した")
-            }) {
+            Button(onClick =  onRequestPermission ) {
                 Text(text = "0N")
             }
         }
@@ -72,7 +69,6 @@ class Camera {
         val cameraController = remember {
             LifecycleCameraController(context)
         }
-
         Scaffold(modifier = Modifier.fillMaxSize()) {paddingValues:PaddingValues ->
             AndroidView(
                 modifier = Modifier.padding(paddingValues),
