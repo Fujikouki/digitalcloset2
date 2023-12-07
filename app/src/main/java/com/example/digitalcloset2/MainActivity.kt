@@ -55,7 +55,17 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun mainui(mainviemodel: mainviewmodel = hiltViewModel()){
+fun mainui(mainviemodel: mainviewmodel = hiltViewModel(),permission: Camera = Camera()){
+
+    val camera = permission
+
+    if(camera.PermissionTest()){
+        Log.d("permission",camera.PermissionTest().toString())
+    }else{
+        Log.d("permission","使えない")
+    }
+
+
     if (mainviemodel.flag){
         Dialog()
     }
