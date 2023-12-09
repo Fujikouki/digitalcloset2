@@ -2,9 +2,9 @@ package com.example.digitalcloset2
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -18,15 +18,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.digitalcloset2.components.ClothsList
 import com.example.digitalcloset2.components.Dialog
+import com.example.digitalcloset2.components.PermissionTest
 import com.example.digitalcloset2.ui.theme.DigitalCloset2Theme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,9 +41,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
-                    mainui()
-
+                    HostScreen()
                 }
             }
         }
@@ -51,30 +49,55 @@ class MainActivity : ComponentActivity() {
 }
 
 
+@Composable
+fun HostScreen(Mainviewmodel: mainviewmodel = hiltViewModel()){
+
+    val navController = rememberNavController()
+
+    NavHost(navController = navController ,
+        startDestination =ScreenRoute.MainScreen.root ){
+
+        composable(route = ScreenRoute.MainScreen.root){
+            Mainui(Mainviewmodel = Mainviewmodel,navController = navController)
+        }
+        composable(route = ScreenRoute.ShootingScreen.root){
+            Column(modifier = Modifier) {
+                Text(text = "写真撮影")
+                PermissionTest(Mainviewmodel = Mainviewmodel)
+            }
+        }
+    }
+
+}
+
+
+
+
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun mainui(mainviemodel: mainviewmodel = hiltViewModel()){
-    if (mainviemodel.flag){
-        Dialog()
+fun Mainui(Mainviewmodel: mainviewmodel,navController: NavController){
+
+    if (Mainviewmodel.flag){
+        Dialog(mainviewmodel = Mainviewmodel,navController = navController )
     }
     Scaffold(floatingActionButton = {
-        FloatingActionButton(onClick = { mainviemodel.flag = true }) {
+        FloatingActionButton(onClick = { Mainviewmodel.flag = true }) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "Clothesadd")
         }
     }) {
-        val cloths by mainviemodel.cloths.collectAsState(initial = emptyList())
-        val clothName by mainviemodel.clothsName.collectAsState(initial = emptyList())
+
+        val cloths by Mainviewmodel.cloths.collectAsState(initial = emptyList())
 
         ClothsList(
             Cloths = cloths,
             onClickRow = { 
-                mainviemodel.setEditing(it)
-                mainviemodel.flag = true
-                mainviemodel.isUpdate = true
+                Mainviewmodel.setEditing(it)
+                Mainviewmodel.flag = true
+                Mainviewmodel.isUpdate = true
                          },
-            onClickDelete = { mainviemodel.deleteCloth(it)}
+            onClickDelete = { Mainviewmodel.deleteCloth(it)}
         )
     }
 }

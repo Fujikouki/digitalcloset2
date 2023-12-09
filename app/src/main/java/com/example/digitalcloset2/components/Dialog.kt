@@ -19,15 +19,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ScaleFactor
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.digitalcloset2.ScreenRoute
 import com.example.digitalcloset2.mainviewmodel
 import java.lang.StringBuilder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Dialog(mainviewmodel: mainviewmodel = hiltViewModel()){
+fun Dialog(mainviewmodel: mainviewmodel,navController: NavController){
     AlertDialog(
         onDismissRequest = {
             mainviewmodel.flag = false
@@ -52,7 +55,9 @@ fun Dialog(mainviewmodel: mainviewmodel = hiltViewModel()){
                        _list = listOf("Casual","Formal","Party","Workout",),v = mainviewmodel.ClothesScene){
                            selectionOption -> mainviewmodel.ClothesScene = selectionOption
                    }
-                   TextButton(onClick = { mainviewmodel.ClothesImage = "image1" + mainviewmodel.ClothesName}) {
+                   TextButton(onClick = {
+                       navController.navigate(ScreenRoute.ShootingScreen.root)
+                   }) {
                        Text(text = "写真を追加")
                    }
                }
@@ -124,10 +129,3 @@ fun ExposedDropdownMenuSample(_title:String,_list:List<String>,v:String,onItemSe
     }
 }
 
-/*@Preview
-@Composable
-fun test(){
-
-    Dialog(flag = true)
-
-}*/
