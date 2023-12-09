@@ -102,9 +102,13 @@ fun CameraStert(Mainviewmodel: mainviewmodel){
                     cameraController.takePicture(mainExecutorService, object : ImageCapture.OnImageCapturedCallback(){
                         override fun onCaptureSuccess(image: ImageProxy) {
                             val resolver = context.contentResolver
+                            val currentTimeMillis = System.currentTimeMillis()
+                            val displayName = "photo_$currentTimeMillis.jpg"
                             val contentValues = ContentValues().apply {
-                                put(MediaStore.Images.Media.DISPLAY_NAME, "photo.jpg")
+                                put(MediaStore.Images.Media.DISPLAY_NAME, displayName)
                                 put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                                put(MediaStore.Images.Media.DATE_ADDED, currentTimeMillis / 1000) // 秒単位でのタイムスタンプ
+                                put(MediaStore.Images.Media.DATE_TAKEN, currentTimeMillis)
                                 // 必要に応じて、他のメタデータを追加できます
                             }
                             val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
