@@ -54,6 +54,13 @@ android {
 
 dependencies {
 
+    //画像読み込み
+    implementation "com.github.bumptech.glide:compose:1.0.0-alpha.1"
+
+    //画面遷移
+    def nav_version = "2.5.3"
+    implementation "androidx.navigation:navigation-compose:$nav_version"
+
 
     //カメラ
     def camerax_version = "1.2.1"
