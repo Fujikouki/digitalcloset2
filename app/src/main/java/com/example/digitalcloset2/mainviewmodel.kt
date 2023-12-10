@@ -1,17 +1,12 @@
 package com.example.digitalcloset2
 
 
-import android.Manifest
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.rememberPermissionState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -22,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class mainviewmodel @Inject constructor(private val clothesDao: ClothesDao):ViewModel() {
 
-    var flag by mutableStateOf(false)
+    var DialogFlag by mutableStateOf(false)
 
     var ClothesName:String by mutableStateOf("")
     var ClothesType:String by mutableStateOf("")
@@ -30,11 +25,10 @@ class mainviewmodel @Inject constructor(private val clothesDao: ClothesDao):View
     var ClothesScene:String by mutableStateOf("")
     var ClothesImage:String by mutableStateOf("")
 
-    var isUpdate:Boolean = false
-
     var editingClothe:ClothesData? = null
     val isEditing:Boolean
         get() = editingClothe != null
+
 
     val cloths = clothesDao.loadAllClothes().distinctUntilChanged()
     val clothsName = clothesDao.loadNameClothes().distinctUntilChanged()
@@ -80,5 +74,15 @@ class mainviewmodel @Inject constructor(private val clothesDao: ClothesDao):View
                 clothesDao.updateClothes(clothes = cloth)
             }
         }
+    }
+
+    fun resetCloth(){
+        editingClothe = null
+        ClothesName = ""
+        ClothesType = ""
+        ClothesColor = ""
+        ClothesScene = ""
+        ClothesImage = ""
+
     }
 }

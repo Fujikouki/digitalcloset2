@@ -13,47 +13,52 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ScaleFactor
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+
 import androidx.navigation.NavController
+
 import com.example.digitalcloset2.ScreenRoute
 import com.example.digitalcloset2.mainviewmodel
-import java.lang.StringBuilder
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Dialog(mainviewmodel: mainviewmodel,navController: NavController){
+fun Dialog(Mainviewmodel: mainviewmodel,navController: NavController){
+    DisposableEffect(Unit){
+        onDispose {
+            Mainviewmodel.resetCloth()
+        }
+    }
     AlertDialog(
         onDismissRequest = {
-            mainviewmodel.flag = false
-            mainviewmodel.isUpdate = false
+            Mainviewmodel.DialogFlag = false
                            },
-        title = { Text(text = "タイトル")},
+        title = { Text(text = if(Mainviewmodel.isEditing)"更新" else "新規作成")},
         text = {
                Column {
                    Text(text = "服の名前")
-                   TextField(value = mainviewmodel.ClothesName , onValueChange = { mainviewmodel.ClothesName = it})
+                   TextField(value = Mainviewmodel.ClothesName , onValueChange = { Mainviewmodel.ClothesName = it})
                    ExposedDropdownMenuSample(
+                       Mainviewmodel =Mainviewmodel,
                        _title = "服の種類",
-                       _list = listOf("Top", "Bottom", "Dress", "Jacket",), v = mainviewmodel.ClothesType){
-                           selectionOption -> mainviewmodel.ClothesType = selectionOption
+                       _list = listOf("Top", "Bottom", "Dress", "Jacket",), v = Mainviewmodel.ClothesType){
+                           selectionOption -> Mainviewmodel.ClothesType = selectionOption
                    }
                    ExposedDropdownMenuSample(
-                       _title = "服の色", _list = listOf("Red", "Blue", "Green", "Black", "White",),v = mainviewmodel.ClothesColor){
-                           selectionOption -> mainviewmodel.ClothesColor = selectionOption
+                       Mainviewmodel = Mainviewmodel,
+                       _title = "服の色", _list = listOf("Red", "Blue", "Green", "Black", "White",),v = Mainviewmodel.ClothesColor){
+                           selectionOption -> Mainviewmodel.ClothesColor = selectionOption
                    }
                    ExposedDropdownMenuSample(
+                       Mainviewmodel = Mainviewmodel,
                        _title = "シーズン",
-                       _list = listOf("Casual","Formal","Party","Workout",),v = mainviewmodel.ClothesScene){
-                           selectionOption -> mainviewmodel.ClothesScene = selectionOption
+                       _list = listOf("Casual","Formal","Party","Workout",),v = Mainviewmodel.ClothesScene){
+                           selectionOption -> Mainviewmodel.ClothesScene = selectionOption
                    }
                    TextButton(onClick = {
                        navController.navigate(ScreenRoute.ShootingScreen.root)
@@ -64,9 +69,13 @@ fun Dialog(mainviewmodel: mainviewmodel,navController: NavController){
         },
         confirmButton = {
             Button(onClick = {
-                mainviewmodel.flag = false
-                mainviewmodel.isUpdate = false
-                mainviewmodel.createCloth()
+                Mainviewmodel.DialogFlag = false
+                if(Mainviewmodel.isEditing){
+                    Mainviewmodel.updateCloth()
+                }else{
+                    Mainviewmodel.createCloth()
+                }
+
             })
             {
                 Text(text = "保存")
@@ -75,8 +84,7 @@ fun Dialog(mainviewmodel: mainviewmodel,navController: NavController){
 
         dismissButton = {
             Button(onClick = {
-                mainviewmodel.flag = false
-                mainviewmodel.isUpdate = false
+                Mainviewmodel.DialogFlag = false
             }) {
                 Text(text = "キャンセル")
             }
@@ -86,13 +94,12 @@ fun Dialog(mainviewmodel: mainviewmodel,navController: NavController){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExposedDropdownMenuSample(_title:String,_list:List<String>,v:String,onItemSelected: (String) -> Unit) {
-    val mainviewmodel:mainviewmodel = hiltViewModel()
+fun ExposedDropdownMenuSample(Mainviewmodel:mainviewmodel,_title:String,_list:List<String>,v:String,onItemSelected: (String) -> Unit) {
     val options = _list
     val title:String = _title
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember { mutableStateOf(options[0]) }
-    if(mainviewmodel.isUpdate){
+    if(Mainviewmodel.isEditing){
         selectedOptionText =  v
     }
 
@@ -128,4 +135,5 @@ fun ExposedDropdownMenuSample(_title:String,_list:List<String>,v:String,onItemSe
         }
     }
 }
+
 

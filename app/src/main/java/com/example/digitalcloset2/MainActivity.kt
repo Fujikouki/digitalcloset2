@@ -79,11 +79,11 @@ fun HostScreen(Mainviewmodel: mainviewmodel = hiltViewModel()){
 @Composable
 fun Mainui(Mainviewmodel: mainviewmodel,navController: NavController){
 
-    if (Mainviewmodel.flag){
-        Dialog(mainviewmodel = Mainviewmodel,navController = navController )
+    if (Mainviewmodel.DialogFlag){
+        Dialog(Mainviewmodel = Mainviewmodel,navController = navController )
     }
     Scaffold(floatingActionButton = {
-        FloatingActionButton(onClick = { Mainviewmodel.flag = true }) {
+        FloatingActionButton(onClick = { Mainviewmodel.DialogFlag = true }) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "Clothesadd")
         }
     }) {
@@ -94,8 +94,7 @@ fun Mainui(Mainviewmodel: mainviewmodel,navController: NavController){
             Cloths = cloths,
             onClickRow = { 
                 Mainviewmodel.setEditing(it)
-                Mainviewmodel.flag = true
-                Mainviewmodel.isUpdate = true
+                Mainviewmodel.DialogFlag = true
                          },
             onClickDelete = { Mainviewmodel.deleteCloth(it)}
         )
