@@ -21,9 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-
 import androidx.navigation.NavController
-
 import com.example.digitalcloset2.ScreenRoute
 import com.example.digitalcloset2.mainviewmodel
 
@@ -46,18 +44,18 @@ fun Dialog(Mainviewmodel: mainviewmodel,navController: NavController){
                Column {
                    Text(text = "服の名前")
                    TextField(value = Mainviewmodel.ClothesName , onValueChange = { Mainviewmodel.ClothesName = it})
-                   ExposedDropdownMenuSample(
+                   DropdownMenu(
                        mainViewModel =Mainviewmodel,
                        _title = "服の種類",
                        _list = listOf("Top", "Bottom", "Dress", "Jacket",), containsValue = Mainviewmodel.ClothesType){
                            selectionOption -> Mainviewmodel.ClothesType = selectionOption
                    }
-                   ExposedDropdownMenuSample(
+                   DropdownMenu(
                        mainViewModel = Mainviewmodel,
                        _title = "服の色", _list = listOf("Red", "Blue", "Green", "Black", "White",),containsValue = Mainviewmodel.ClothesColor){
                            selectionOption -> Mainviewmodel.ClothesColor = selectionOption
                    }
-                   ExposedDropdownMenuSample(
+                   DropdownMenu(
                        mainViewModel = Mainviewmodel,
                        _title = "シーズン",
                        _list = listOf("Casual","Formal","Party","Workout",),containsValue = Mainviewmodel.ClothesScene){
@@ -98,7 +96,7 @@ fun Dialog(Mainviewmodel: mainviewmodel,navController: NavController){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExposedDropdownMenuSample(mainViewModel:mainviewmodel, _title:String, _list:List<String>, containsValue:String, onItemSelected: (String) -> Unit) {
+fun DropdownMenu(mainViewModel:mainviewmodel, _title:String, _list:List<String>, containsValue:String, onItemSelected: (String) -> Unit) {
     val list:List<String> = _list
     val title:String = _title
     var expanded by remember { mutableStateOf(false) }
