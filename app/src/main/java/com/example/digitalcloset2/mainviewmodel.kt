@@ -19,6 +19,8 @@ class mainviewmodel @Inject constructor(private val clothesDao: ClothesDao):View
 
     var DialogFlag by mutableStateOf(false)
 
+    var SucceededShooting by mutableStateOf(false)
+
     var ClothesName:String by mutableStateOf("")
     var ClothesType:String by mutableStateOf("")
     var ClothesColor: String by mutableStateOf("")
@@ -28,6 +30,8 @@ class mainviewmodel @Inject constructor(private val clothesDao: ClothesDao):View
     var editingClothe:ClothesData? = null
     val isEditing:Boolean
         get() = editingClothe != null
+
+    var isUpdata:Boolean by mutableStateOf(false)
 
 
     val cloths = clothesDao.loadAllClothes().distinctUntilChanged()

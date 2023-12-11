@@ -30,11 +30,15 @@ import com.example.digitalcloset2.mainviewmodel
 @Composable
 fun Dialog(Mainviewmodel: mainviewmodel,navController: NavController){
     val context = LocalContext.current
-    DisposableEffect(Unit){
-        onDispose {
-            Mainviewmodel.resetCloth()
+    if(!Mainviewmodel.isUpdata){
+        DisposableEffect(Unit){
+            onDispose {
+                Mainviewmodel.resetCloth()
+            }
         }
     }
+
+
     AlertDialog(
         onDismissRequest = {
             Mainviewmodel.DialogFlag = false
@@ -62,6 +66,7 @@ fun Dialog(Mainviewmodel: mainviewmodel,navController: NavController){
                            selectionOption -> Mainviewmodel.ClothesScene = selectionOption
                    }
                    TextButton(onClick = {
+                       Mainviewmodel.isUpdata = true
                        navController.navigate(ScreenRoute.ShootingScreen.root)
                    }) {
                        Text(text = "写真を追加")

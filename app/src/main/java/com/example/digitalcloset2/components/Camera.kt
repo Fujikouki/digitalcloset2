@@ -2,10 +2,12 @@ package com.example.digitalcloset2.components
 
 import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.annotation.ColorInt
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -14,7 +16,9 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Button
@@ -35,10 +40,17 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.example.digitalcloset2.ScreenRoute
 import com.example.digitalcloset2.mainviewmodel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -50,18 +62,19 @@ import java.util.Locale
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun PermissionTest(Mainviewmodel:mainviewmodel){
+fun PermissionTest(Mainviewmodel:mainviewmodel,navController: NavController){
     val permissionState: PermissionState = rememberPermissionState(permission = android.Manifest.permission.CAMERA)
     MainContent(
         Mainviewmodel = Mainviewmodel,
         hasPermission = permissionState.status.isGranted,
-        onRequestPermission = permissionState::launchPermissionRequest )
+        onRequestPermission = permissionState::launchPermissionRequest,
+        navController = navController)
 }
 
 @Composable
-fun MainContent(Mainviewmodel: mainviewmodel,hasPermission:Boolean,onRequestPermission:()-> Unit){
+fun MainContent(Mainviewmodel: mainviewmodel,navController: NavController,hasPermission:Boolean,onRequestPermission:()-> Unit){
     if(hasPermission){
-        CameraStert(Mainviewmodel = Mainviewmodel)
+        CameraStert(Mainviewmodel = Mainviewmodel, navController = navController)
     }else{
         Log.d("カメラ",onRequestPermission.toString())
         NoPermission(onRequestPermission)
@@ -81,16 +94,15 @@ fun NoPermission(onRequestPermission: () -> Unit){
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
-fun CameraStert(Mainviewmodel: mainviewmodel){
+fun CameraStert(Mainviewmodel: mainviewmodel,navController: NavController){
     val imageCapture =  remember {
         ImageCapture.Builder()
             .setFlashMode(ImageCapture.FLASH_MODE_AUTO) // フラッシュモードを設定
-            .setTargetAspectRatio(AspectRatio.RATIO_16_9) // ターゲットのアスペクト比を設定
+            .setTargetAspectRatio(AspectRatio.RATIO_4_3) // ターゲットのアスペクト比を設定
             .build()
     }
-
 
     Log.d("はじまり",imageCapture.toString())
     val context = LocalContext.current
@@ -102,7 +114,7 @@ fun CameraStert(Mainviewmodel: mainviewmodel){
     //ここから修正
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val previewView = PreviewView(context).apply {
-        layoutParams = LinearLayout.LayoutParams(500,500)
+        layoutParams = LinearLayout.LayoutParams(600,600)
         scaleType = PreviewView.ScaleType.FILL_CENTER
     }
     DisposableEffect(Unit) {
@@ -126,6 +138,7 @@ fun CameraStert(Mainviewmodel: mainviewmodel){
         onDispose {
             cameraProvider.unbindAll()
             Log.d("imageCapture7",imageCapture.toString())
+            Mainviewmodel.SucceededShooting = false
         }
     }
     Log.d("imageCapture8",imageCapture.toString())
@@ -143,25 +156,42 @@ fun CameraStert(Mainviewmodel: mainviewmodel){
                         tackCatcher(
                             Mainviewmodel = Mainviewmodel,
                             context = context,
-                            cameraController = cameraController,
                             imageCapture = it
-
                         )
                     }
                 }
             )
         }
     ) { paddingValues:PaddingValues ->
-        AndroidView(
-            modifier = Modifier.padding(paddingValues),
-            factory = {
-                previewView
-            })
+        Column(modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize()
+            .wrapContentSize(Alignment.Center)) {
+            if(Mainviewmodel.SucceededShooting){
+                Column(modifier = Modifier) {
+                    GlideImage(model = Uri.parse(Mainviewmodel.ClothesImage), contentDescription = "撮影した写真")
+                    Button(onClick = {
+                        navController.popBackStack()
+                    }) {
+                        Text(text = "この写真を使う")
+                    }
+                }
+            }else{
+                Column(modifier = Modifier) {
+                    AndroidView(
+                        modifier = Modifier,
+                        factory = {
+                            previewView
+                        }
+                    )
+                    Text(text = "金沢工業大学", fontSize = 30.sp)
+                }
+            }
+        }
     }
 }
 
-
-fun tackCatcher(Mainviewmodel: mainviewmodel,context: Context,cameraController: LifecycleCameraController,imageCapture:ImageCapture){
+fun tackCatcher(Mainviewmodel: mainviewmodel,context: Context,imageCapture:ImageCapture){
     val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
     val mainExecutorService = ContextCompat.getMainExecutor(context)
     val name = SimpleDateFormat(FILENAME_FORMAT, Locale.JAPAN)
@@ -175,10 +205,12 @@ fun tackCatcher(Mainviewmodel: mainviewmodel,context: Context,cameraController: 
         .Builder(context.contentResolver,MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues).build()
         imageCapture.takePicture(outputFileOptions,mainExecutorService,object :ImageCapture.OnImageSavedCallback{
         override fun onError(exception: ImageCaptureException) {
+            Mainviewmodel.SucceededShooting = false
             Toast.makeText(context,exception.toString(),Toast.LENGTH_SHORT).show()
             Log.d("captcher",exception.toString())
         }
         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+            Mainviewmodel.SucceededShooting = true
             val savedUri = outputFileResults.savedUri
             savedUri?.let { uri ->
                 Toast.makeText(context, "Image saved: $savedUri", Toast.LENGTH_SHORT).show()
