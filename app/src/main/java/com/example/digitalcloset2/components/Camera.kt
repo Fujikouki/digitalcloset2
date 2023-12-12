@@ -33,6 +33,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,6 +57,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -93,6 +95,58 @@ fun NoPermission(onRequestPermission: () -> Unit){
         }
     }
 }
+@Composable
+fun cameraScreen(Mainviewmodel: mainviewmodel,):ImageCapture{
+    val imageCapture =  remember {
+        ImageCapture.Builder()
+            .setFlashMode(ImageCapture.FLASH_MODE_AUTO) // フラッシュモードを設定
+            .setTargetAspectRatio(AspectRatio.RATIO_4_3) // ターゲットのアスペクト比を設定
+            .build()
+    }
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val cameraController = remember {
+        LifecycleCameraController(context)
+    }
+    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
+
+    val previewView = PreviewView(context).apply {
+        layoutParams = LinearLayout.LayoutParams(600,600)
+        scaleType = PreviewView.ScaleType.FILL_CENTER
+    }
+    DisposableEffect(Unit) {
+        val cameraProvider = cameraProviderFuture.get()
+        Log.d("cameraProvider",cameraProvider.toString())
+        val preview = Preview.Builder().build()
+
+        val cameraSelector = CameraSelector.Builder()
+            .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+            .build()
+
+        preview.setSurfaceProvider(previewView.surfaceProvider)
+
+        cameraProvider.bindToLifecycle(
+            lifecycleOwner,
+            cameraSelector,
+            preview,
+            imageCapture
+        )
+        Log.d("imageCapture6",imageCapture.toString())
+        onDispose {
+            cameraProvider.unbindAll()
+            Log.d("imageCapture7",imageCapture.toString())
+            Mainviewmodel.SucceededShooting = false
+        }
+    }
+    return imageCapture
+}
+
+
+
+
+
+
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
@@ -103,8 +157,6 @@ fun CameraStert(Mainviewmodel: mainviewmodel,navController: NavController){
             .setTargetAspectRatio(AspectRatio.RATIO_4_3) // ターゲットのアスペクト比を設定
             .build()
     }
-
-    Log.d("はじまり",imageCapture.toString())
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val cameraController = remember {
@@ -113,10 +165,12 @@ fun CameraStert(Mainviewmodel: mainviewmodel,navController: NavController){
     //cameraController.cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     //ここから修正
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
+
     val previewView = PreviewView(context).apply {
         layoutParams = LinearLayout.LayoutParams(600,600)
         scaleType = PreviewView.ScaleType.FILL_CENTER
     }
+
     DisposableEffect(Unit) {
         val cameraProvider = cameraProviderFuture.get()
         Log.d("cameraProvider",cameraProvider.toString())
@@ -147,17 +201,26 @@ fun CameraStert(Mainviewmodel: mainviewmodel,navController: NavController){
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 text = {
-                    Text(text = "写真を取る")
+                    if(Mainviewmodel.SucceededShooting){
+                        Text(text = "もう一度撮影する")
+                    }else{
+                        Text(text = "写真を取る")
+                    }
                 },
                 icon = { Icon(imageVector = Icons.Default.Create, contentDescription = "写真を取る") },
                 onClick = {
-                    Log.d("image",imageCapture.toString())
-                    imageCapture?.let {
-                        tackCatcher(
-                            Mainviewmodel = Mainviewmodel,
-                            context = context,
-                            imageCapture = it
-                        )
+                    if(Mainviewmodel.SucceededShooting){
+                        Mainviewmodel.SucceededShooting = false
+
+                    }else{
+                        Log.d("image",imageCapture.toString())
+                        imageCapture?.let {
+                            tackCatcher(
+                                Mainviewmodel = Mainviewmodel,
+                                context = context,
+                                imageCapture = it
+                            )
+                        }
                     }
                 }
             )
@@ -203,7 +266,7 @@ fun tackCatcher(Mainviewmodel: mainviewmodel,context: Context,imageCapture:Image
     }
     val outputFileOptions = ImageCapture.OutputFileOptions
         .Builder(context.contentResolver,MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues).build()
-        imageCapture.takePicture(outputFileOptions,mainExecutorService,object :ImageCapture.OnImageSavedCallback{
+    imageCapture.takePicture(outputFileOptions,mainExecutorService,object :ImageCapture.OnImageSavedCallback{
         override fun onError(exception: ImageCaptureException) {
             Mainviewmodel.SucceededShooting = false
             Toast.makeText(context,exception.toString(),Toast.LENGTH_SHORT).show()
