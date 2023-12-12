@@ -96,7 +96,7 @@ fun NoPermission(onRequestPermission: () -> Unit){
     }
 }
 @Composable
-fun cameraScreen(Mainviewmodel: mainviewmodel,):ImageCapture{
+fun cameraScreen(Mainviewmodel: mainviewmodel,):Triple<ImageCapture,Context,PreviewView>{
     val imageCapture =  remember {
         ImageCapture.Builder()
             .setFlashMode(ImageCapture.FLASH_MODE_AUTO) // フラッシュモードを設定
@@ -138,64 +138,20 @@ fun cameraScreen(Mainviewmodel: mainviewmodel,):ImageCapture{
             Mainviewmodel.SucceededShooting = false
         }
     }
-    return imageCapture
+    return Triple(imageCapture,context,previewView)
 }
-
-
-
-
-
 
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun CameraStert(Mainviewmodel: mainviewmodel,navController: NavController){
-    val imageCapture =  remember {
-        ImageCapture.Builder()
-            .setFlashMode(ImageCapture.FLASH_MODE_AUTO) // フラッシュモードを設定
-            .setTargetAspectRatio(AspectRatio.RATIO_4_3) // ターゲットのアスペクト比を設定
-            .build()
-    }
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val cameraController = remember {
-        LifecycleCameraController(context)
-    }
-    //cameraController.cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-    //ここから修正
-    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
 
-    val previewView = PreviewView(context).apply {
-        layoutParams = LinearLayout.LayoutParams(600,600)
-        scaleType = PreviewView.ScaleType.FILL_CENTER
-    }
+    val _cameraScreen = cameraScreen(Mainviewmodel = Mainviewmodel)
+    val imageCapture = _cameraScreen.first
+    val context = _cameraScreen.second
+    val previewView = _cameraScreen.third
 
-    DisposableEffect(Unit) {
-        val cameraProvider = cameraProviderFuture.get()
-        Log.d("cameraProvider",cameraProvider.toString())
-        val preview = Preview.Builder().build()
-
-        val cameraSelector = CameraSelector.Builder()
-            .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-            .build()
-
-        preview.setSurfaceProvider(previewView.surfaceProvider)
-
-        cameraProvider.bindToLifecycle(
-            lifecycleOwner,
-            cameraSelector,
-            preview,
-            imageCapture
-        )
-        Log.d("imageCapture6",imageCapture.toString())
-        onDispose {
-            cameraProvider.unbindAll()
-            Log.d("imageCapture7",imageCapture.toString())
-            Mainviewmodel.SucceededShooting = false
-        }
-    }
-    Log.d("imageCapture8",imageCapture.toString())
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
@@ -210,10 +166,9 @@ fun CameraStert(Mainviewmodel: mainviewmodel,navController: NavController){
                 icon = { Icon(imageVector = Icons.Default.Create, contentDescription = "写真を取る") },
                 onClick = {
                     if(Mainviewmodel.SucceededShooting){
-                        Mainviewmodel.SucceededShooting = false
-
+                        Mainviewmodel.SucceededShooting
                     }else{
-                        Log.d("image",imageCapture.toString())
+                        Log.d("image",_cameraScreen.toString())
                         imageCapture?.let {
                             tackCatcher(
                                 Mainviewmodel = Mainviewmodel,
@@ -240,6 +195,7 @@ fun CameraStert(Mainviewmodel: mainviewmodel,navController: NavController){
                     }
                 }
             }else{
+
                 Column(modifier = Modifier) {
                     AndroidView(
                         modifier = Modifier,
