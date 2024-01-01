@@ -71,10 +71,7 @@ fun ClothsRow(
             GlideImage(model = Uri.parse(cloth.ClothesImage), contentDescription = "服の写真")
             Log.d("cloth.Image",cloth.ClothesImage)
         }
-
-
     }
-
 }
 
 @Preview
