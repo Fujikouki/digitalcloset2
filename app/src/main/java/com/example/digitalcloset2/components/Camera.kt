@@ -203,7 +203,6 @@ fun CameraStert(Mainviewmodel: mainviewmodel,navController: NavController){
                             previewView
                         }
                     )
-                    Text(text = "金沢工業大学", fontSize = 30.sp)
                 }
             }
         }
