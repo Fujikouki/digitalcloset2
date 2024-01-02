@@ -2,6 +2,7 @@ package com.example.digitalcloset2.components
 
 
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.AlertDialog
@@ -31,6 +32,7 @@ import com.example.digitalcloset2.mainviewmodel
 fun Dialog(Mainviewmodel: mainviewmodel,navController: NavController){
     val context = LocalContext.current
     if(!Mainviewmodel.isUpdata){
+        Log.d("情報",Mainviewmodel.isUpdata.toString())
         DisposableEffect(Unit){
             onDispose {
                 Mainviewmodel.resetCloth()
@@ -79,6 +81,7 @@ fun Dialog(Mainviewmodel: mainviewmodel,navController: NavController){
                     Toast.makeText(context,"名前を入力してください",Toast.LENGTH_SHORT).show()
                 }else{
                     Mainviewmodel.DialogFlag = false
+                    Mainviewmodel.isUpdata = false
                     if(Mainviewmodel.isEditing){
                         Mainviewmodel.updateCloth()
                     }else{
@@ -91,6 +94,7 @@ fun Dialog(Mainviewmodel: mainviewmodel,navController: NavController){
                         },
         dismissButton = {
             Button(onClick = {
+                Mainviewmodel.isUpdata = false
                 Mainviewmodel.DialogFlag = false
             }) {
                 Text(text = "キャンセル")
