@@ -65,6 +65,7 @@ import java.util.Locale
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PermissionTest(Mainviewmodel:mainviewmodel,navController: NavController){
+    Log.d("写真ボタン7",Mainviewmodel.isUpdata.toString())
     val permissionState: PermissionState = rememberPermissionState(permission = android.Manifest.permission.CAMERA)
     MainContent(
         Mainviewmodel = Mainviewmodel,

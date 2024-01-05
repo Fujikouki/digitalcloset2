@@ -31,7 +31,7 @@ class mainviewmodel @Inject constructor(private val clothesDao: ClothesDao):View
     val isEditing:Boolean
         get() = editingClothe != null
 
-    var isUpdata:Boolean by mutableStateOf(false)
+    var isUpdata by mutableStateOf(false)
 
 
     val cloths = clothesDao.loadAllClothes().distinctUntilChanged()

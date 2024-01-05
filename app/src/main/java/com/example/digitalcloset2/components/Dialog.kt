@@ -39,6 +39,8 @@ fun Dialog(Mainviewmodel: mainviewmodel,navController: NavController){
             }
         }
     }
+    Log.d("情報２",Mainviewmodel.isUpdata.toString())
+    Log.d("情報2",Mainviewmodel.ClothesName)
 
 
     AlertDialog(
@@ -69,6 +71,7 @@ fun Dialog(Mainviewmodel: mainviewmodel,navController: NavController){
                    }
                    TextButton(onClick = {
                        Mainviewmodel.isUpdata = true
+                       Log.d("写真ボタン",Mainviewmodel.isUpdata.toString())
                        navController.navigate(ScreenRoute.ShootingScreen.root)
                    }) {
                        Text(text = "写真を追加")
