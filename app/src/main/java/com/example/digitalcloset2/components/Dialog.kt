@@ -35,13 +35,13 @@ fun Dialog(Mainviewmodel: mainviewmodel,navController: NavController){
         Log.d("情報",Mainviewmodel.isUpdata.toString())
         DisposableEffect(Unit){
             onDispose {
-                Mainviewmodel.resetCloth()
+                Log.d("消える",Mainviewmodel.isUpdata.toString())
+                if(Mainviewmodel.isUpdata == false){
+                    Mainviewmodel.resetCloth()
+                }
             }
         }
     }
-    Log.d("情報２",Mainviewmodel.isUpdata.toString())
-    Log.d("情報2",Mainviewmodel.ClothesName)
-
 
     AlertDialog(
         onDismissRequest = {
