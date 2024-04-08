@@ -25,6 +25,4 @@ interface ClothesDao {
     suspend  fun deleteClothes(clothes: ClothesData)
 
 
-
-
 }

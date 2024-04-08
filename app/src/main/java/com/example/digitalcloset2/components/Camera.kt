@@ -5,9 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.annotation.ColorInt
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -16,16 +14,11 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
@@ -33,7 +26,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,23 +33,18 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.example.digitalcloset2.ScreenRoute
 import com.example.digitalcloset2.mainviewmodel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -100,8 +87,8 @@ fun NoPermission(onRequestPermission: () -> Unit){
 fun cameraScreen(Mainviewmodel: mainviewmodel,):Triple<ImageCapture,Context,PreviewView>{
     val imageCapture =  remember {
         ImageCapture.Builder()
-            .setFlashMode(ImageCapture.FLASH_MODE_AUTO) // フラッシュモードを設定
-            .setTargetAspectRatio(AspectRatio.RATIO_4_3) // ターゲットのアスペクト比を設定
+            .setFlashMode(ImageCapture.FLASH_MODE_AUTO)
+            .setTargetAspectRatio(AspectRatio.RATIO_4_3)
             .build()
     }
     val context = LocalContext.current
@@ -112,12 +99,12 @@ fun cameraScreen(Mainviewmodel: mainviewmodel,):Triple<ImageCapture,Context,Prev
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
 
     val previewView = PreviewView(context).apply {
-        layoutParams = LinearLayout.LayoutParams(600,600)
+        //layoutParams = LinearLayout.LayoutParams(600,600)
         scaleType = PreviewView.ScaleType.FILL_CENTER
     }
     DisposableEffect(Unit) {
         val cameraProvider = cameraProviderFuture.get()
-        Log.d("cameraProvider",cameraProvider.toString())
+
         val preview = Preview.Builder().build()
 
         val cameraSelector = CameraSelector.Builder()
