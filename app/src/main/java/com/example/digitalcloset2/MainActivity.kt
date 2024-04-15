@@ -35,7 +35,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DigitalCloset2Theme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -49,19 +48,22 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun HostScreen(Mainviewmodel: mainviewmodel = hiltViewModel()){
+fun HostScreen(mainViewmodel: MainViewmodel = hiltViewModel()) {
 
     val navController = rememberNavController()
 
-    NavHost(navController = navController ,
-        startDestination =ScreenRoute.MainScreen.root ){
+    val uiState by mainViewmodel.mainUiState.collectAsState()
 
-        composable(route = ScreenRoute.MainScreen.root){
-            Mainui(Mainviewmodel = Mainviewmodel,navController = navController)
+    NavHost(
+        navController = navController,
+        startDestination = ScreenRoute.MainScreen.root
+    ) {
+        composable(route = ScreenRoute.MainScreen.root) {
+            MainUi(mainViewmodel = mainViewmodel, navController = navController, uiState = uiState)
         }
-        composable(route = ScreenRoute.ShootingScreen.root){
+        composable(route = ScreenRoute.ShootingScreen.root) {
             Column(modifier = Modifier) {
-                PermissionTest(Mainviewmodel = Mainviewmodel, navController = navController)
+                PermissionTest(Mainviewmodel = mainViewmodel, navController = navController)
             }
         }
     }
@@ -69,35 +71,31 @@ fun HostScreen(Mainviewmodel: mainviewmodel = hiltViewModel()){
 }
 
 
-
-
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Mainui(Mainviewmodel: mainviewmodel,navController: NavController){
+fun MainUi(mainViewmodel: MainViewmodel, uiState: MainUiState, navController: NavController) {
 
-    if (Mainviewmodel.DialogFlag){
-        Dialog(Mainviewmodel = Mainviewmodel,navController = navController )
+    if (uiState.dialogFlag) {
+        Dialog(mainViewmodel = mainViewmodel, navController = navController)
     }
-    Scaffold(floatingActionButton = {
-        FloatingActionButton(onClick = { Mainviewmodel.DialogFlag = true }) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Clothesadd")
-        }
-    }) {
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { mainViewmodel.chengeDialogFlag(true) })
+            {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Clothes add")
+            }
+        }) {
 
-        val cloths by Mainviewmodel.cloths.collectAsState(initial = emptyList())
+        val cloths by mainViewmodel.cloths.collectAsState(initial = emptyList())
 
         ClothsList(
             Cloths = cloths,
-            onClickRow = { 
-                Mainviewmodel.setEditing(it)
-                Mainviewmodel.DialogFlag = true
-                         },
-            onClickDelete = { Mainviewmodel.deleteCloth(it)}
+            onClickRow = {
+                mainViewmodel.setEditing(it)
+                mainViewmodel.chengeDialogFlag(true)
+            },
+            onClickDelete = { mainViewmodel.deleteCloth(it) }
         )
     }
 }
-
-
-
