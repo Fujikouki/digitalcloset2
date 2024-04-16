@@ -60,11 +60,26 @@ class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : Vi
     }
 
 
-    var SucceededShooting by mutableStateOf(false)
+    var succeededShooting by mutableStateOf(false)
 
-    var ClothesImage: String by mutableStateOf("")
 
-    var editingClothe: ClothesData? by mutableStateOf(null)
+    fun checkImage() {
+        if (clothesImage != "") {
+            succeededShooting = true
+        }
+    }
+
+
+    fun clearImage() {
+        clothesImage = ""
+        succeededShooting = false
+    }
+
+
+    var clothesImage: String by mutableStateOf("")
+        private set
+
+    private var editingClothe: ClothesData? by mutableStateOf(null)
 
     val isEditing: Boolean
         get() = editingClothe != null
@@ -104,7 +119,7 @@ class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : Vi
                 cloth.ClothesType = _clothesDialog.value.ClothesType
                 cloth.ClothesColor = _clothesDialog.value.ClothesColor
                 cloth.ClothesScene = _clothesDialog.value.ClothesScene
-                cloth.ClothesImage = ClothesImage
+                cloth.ClothesImage = clothesImage
                 clothesDao.updateClothes(clothes = cloth)
             }
         }

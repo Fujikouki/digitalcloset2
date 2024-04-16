@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.digitalcloset2.Camera.CameraManager
 import com.example.digitalcloset2.components.ClothsList
 import com.example.digitalcloset2.components.Dialog
 import com.example.digitalcloset2.components.PermissionTest
@@ -31,15 +32,19 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val camera = CameraManager()
         setContent {
             DigitalCloset2Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+
                     HostScreen()
+
                 }
             }
         }
@@ -63,7 +68,7 @@ fun HostScreen(mainViewmodel: MainViewmodel = hiltViewModel()) {
         }
         composable(route = ScreenRoute.ShootingScreen.root) {
             Column(modifier = Modifier) {
-                PermissionTest(Mainviewmodel = mainViewmodel, navController = navController)
+                PermissionTest(mainViewmodel = mainViewmodel, navController = navController)
             }
         }
     }
@@ -99,3 +104,5 @@ fun MainUi(mainViewmodel: MainViewmodel, uiState: MainUiState, navController: Na
         )
     }
 }
+
+
