@@ -26,6 +26,9 @@ class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : Vi
     private val _clothesDialog = MutableStateFlow(ClothesData())
     val clothesDialog: StateFlow<ClothesData> = _clothesDialog.asStateFlow()
 
+    private val _cameraUiState = MutableStateFlow(CameraUisate())
+    val cameraUiState: StateFlow<CameraUisate> = _cameraUiState.asStateFlow()
+
 
     fun chengeDialogFlag(flag: Boolean) {
         _mainUiState.value = _mainUiState.value.copy(dialogFlag = flag)
@@ -59,12 +62,27 @@ class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : Vi
         _mainUiState.value = _mainUiState.value.copy(onCamera = flag)
     }
 
+    fun chengeSucceededShooting() {
 
-    var SucceededShooting by mutableStateOf(false)
+        _cameraUiState.value = _cameraUiState.value.copy(
+            succeededShooting = true,
+            imagePath = _clothesDialog.value.ClothesImage
+        )
 
-    var ClothesImage: String by mutableStateOf("")
+    }
 
-    var editingClothe: ClothesData? by mutableStateOf(null)
+
+    fun clearImage() {
+        _cameraUiState.value = _cameraUiState.value.copy(
+            succeededShooting = false, imagePath = ""
+        )
+    }
+
+
+    var clothesImage: String by mutableStateOf("")
+        private set
+
+    private var editingClothe: ClothesData? by mutableStateOf(null)
 
     val isEditing: Boolean
         get() = editingClothe != null
@@ -104,7 +122,7 @@ class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : Vi
                 cloth.ClothesType = _clothesDialog.value.ClothesType
                 cloth.ClothesColor = _clothesDialog.value.ClothesColor
                 cloth.ClothesScene = _clothesDialog.value.ClothesScene
-                cloth.ClothesImage = ClothesImage
+                cloth.ClothesImage = clothesImage
                 clothesDao.updateClothes(clothes = cloth)
             }
         }
@@ -135,4 +153,8 @@ data class MainUiState(
     val dialogFlag: Boolean = false,
     val isUpdata: Boolean = false,
     val onCamera: Boolean = false,
+)
+
+data class CameraUisate(
+    val succeededShooting: Boolean = false, val imagePath: String = ""
 )
