@@ -8,13 +8,13 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -40,13 +40,16 @@ class CameraManager() {
 
         val cameraProvider = cameraProviderFuture.get()
 
+
         val preview = Preview.Builder().build()
 
         val cameraSelector = CameraSelector.Builder()
             .requireLensFacing(CameraSelector.LENS_FACING_BACK)
             .build()
 
+        cameraProvider.unbindAll()
         preview.setSurfaceProvider(previewView.surfaceProvider)
+
         cameraProvider.bindToLifecycle(
             lifecycleOwner,
             cameraSelector,
@@ -56,12 +59,22 @@ class CameraManager() {
         return previewView
     }
 
+    //cameraControllerを使う場合
+    fun starCamera(context: Context, lifecycleOwner: LifecycleOwner): LifecycleCameraController {
+        val cameraController = LifecycleCameraController(context)
+        Log.d("CameraManager", context.toString())
+        cameraController.bindToLifecycle(lifecycleOwner)
+        cameraController.setCameraSelector(CameraSelector.DEFAULT_BACK_CAMERA)
+        return cameraController
+    }
+
     fun takePhoto(context: Context, mainViewmodel: MainViewmodel) {
 
         val imageCapture = imageCapture ?: return
 
         val name = SimpleDateFormat(FILENAME_FORMAT, Locale.JAPAN)
             .format(System.currentTimeMillis())
+
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
@@ -73,27 +86,30 @@ class CameraManager() {
                 context.contentResolver,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 contentValues
+            ).build()
+
+        try {
+            imageCapture.takePicture(
+                outputOptions,
+                ContextCompat.getMainExecutor(context),
+                object : ImageCapture.OnImageSavedCallback {
+                    override fun onError(exc: ImageCaptureException) {
+                        Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                        Log.e(TAG, "保存失敗")
+                        mainViewmodel.clearImage()
+                    }
+
+                    override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                        val msg = "Photo capture succeeded: ${output.savedUri}"
+                        mainViewmodel.chengeClothesImage(output.savedUri.toString())
+                        mainViewmodel.chengeSucceededShooting()
+                        Log.d(TAG, msg)
+                    }
+                }
             )
-            .build()
-
-        imageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(context),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
-                    mainViewmodel.clearImage()
-                }
-
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
-                    mainViewmodel.chengeClothesImage(output.savedUri.toString())
-                    mainViewmodel.checkImage()
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, msg)
-                }
-            }
-        )
+        } catch (e: Exception) {
+            Log.e(TAG, "Photo capture failed: ${e.message}")
+        }
     }
 
 

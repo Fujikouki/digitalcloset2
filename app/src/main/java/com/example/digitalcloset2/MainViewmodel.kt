@@ -26,6 +26,9 @@ class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : Vi
     private val _clothesDialog = MutableStateFlow(ClothesData())
     val clothesDialog: StateFlow<ClothesData> = _clothesDialog.asStateFlow()
 
+    private val _cameraUiState = MutableStateFlow(CameraUisate())
+    val cameraUiState: StateFlow<CameraUisate> = _cameraUiState.asStateFlow()
+
 
     fun chengeDialogFlag(flag: Boolean) {
         _mainUiState.value = _mainUiState.value.copy(dialogFlag = flag)
@@ -59,20 +62,16 @@ class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : Vi
         _mainUiState.value = _mainUiState.value.copy(onCamera = flag)
     }
 
-
-    var succeededShooting by mutableStateOf(false)
-
-
-    fun checkImage() {
-        if (clothesImage != "") {
-            succeededShooting = true
+    fun chengeSucceededShooting() {
+        if (_clothesDialog.value.ClothesImage != "") {
+            _cameraUiState.value = _cameraUiState.value.copy(succeededShooting = true)
         }
     }
 
 
     fun clearImage() {
         clothesImage = ""
-        succeededShooting = false
+        _cameraUiState.value = _cameraUiState.value.copy(succeededShooting = false)
     }
 
 
@@ -150,4 +149,8 @@ data class MainUiState(
     val dialogFlag: Boolean = false,
     val isUpdata: Boolean = false,
     val onCamera: Boolean = false,
+)
+
+data class CameraUisate(
+    val succeededShooting: Boolean = false
 )
