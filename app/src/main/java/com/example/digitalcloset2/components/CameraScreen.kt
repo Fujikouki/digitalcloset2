@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -65,7 +66,6 @@ fun MainContent(
             PhotoConfirmationScreen(mainViewmodel = mainViewmodel, navController = navController)
         } else {
             TestScreen(mainViewmodel = mainViewmodel)
-            //CameraPreview()
         }
     } else {
         NoPermission(onRequestPermission)
@@ -123,8 +123,11 @@ fun PhotoConfirmationScreen(mainViewmodel: MainViewmodel, navController: NavCont
         verticalArrangement = Arrangement.Center
     )
     {
+
+        val uiState by mainViewmodel.cameraUiState.collectAsState()
+
         Text(text = "写真を撮りました")
-        GlideImage(model = Uri.parse(mainViewmodel.clothesImage), contentDescription = "服の写真")
+        GlideImage(model = Uri.parse(uiState.imagePath), contentDescription = "服の写真")
         Button(onClick = { navController.popBackStack() }) {
             Text(text = "保存")
         }
@@ -132,9 +135,9 @@ fun PhotoConfirmationScreen(mainViewmodel: MainViewmodel, navController: NavCont
             Text(text = "再撮影")
         }
     }
-    /*DisposableEffect(Unit) {
+    DisposableEffect(Unit) {
         onDispose {
             mainViewmodel.clearImage()
         }
-    }*/
+    }
 }

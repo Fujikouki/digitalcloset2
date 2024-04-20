@@ -63,15 +63,19 @@ class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : Vi
     }
 
     fun chengeSucceededShooting() {
-        if (_clothesDialog.value.ClothesImage != "") {
-            _cameraUiState.value = _cameraUiState.value.copy(succeededShooting = true)
-        }
+
+        _cameraUiState.value = _cameraUiState.value.copy(
+            succeededShooting = true,
+            imagePath = _clothesDialog.value.ClothesImage
+        )
+
     }
 
 
     fun clearImage() {
-        clothesImage = ""
-        _cameraUiState.value = _cameraUiState.value.copy(succeededShooting = false)
+        _cameraUiState.value = _cameraUiState.value.copy(
+            succeededShooting = false, imagePath = ""
+        )
     }
 
 
@@ -152,5 +156,5 @@ data class MainUiState(
 )
 
 data class CameraUisate(
-    val succeededShooting: Boolean = false
+    val succeededShooting: Boolean = false, val imagePath: String = ""
 )
