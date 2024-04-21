@@ -6,14 +6,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,28 +25,22 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.digitalcloset2.Camera.CameraManager
+import com.example.compose.AppTheme
 import com.example.digitalcloset2.components.ClothsList
 import com.example.digitalcloset2.components.Dialog
 import com.example.digitalcloset2.components.PermissionTest
-import com.example.digitalcloset2.ui.theme.DigitalCloset2Theme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val camera = CameraManager()
         setContent {
-            DigitalCloset2Theme {
+            AppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
                 ) {
-
                     HostScreen()
-
                 }
             }
         }
@@ -60,8 +56,7 @@ fun HostScreen(mainViewmodel: MainViewmodel = hiltViewModel()) {
     val uiState by mainViewmodel.mainUiState.collectAsState()
 
     NavHost(
-        navController = navController,
-        startDestination = ScreenRoute.MainScreen.root
+        navController = navController, startDestination = ScreenRoute.MainScreen.root
     ) {
         composable(route = ScreenRoute.MainScreen.root) {
             MainUi(mainViewmodel = mainViewmodel, navController = navController, uiState = uiState)
@@ -85,23 +80,27 @@ fun MainUi(mainViewmodel: MainViewmodel, uiState: MainUiState, navController: Na
         Dialog(mainViewmodel = mainViewmodel, navController = navController)
     }
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = { mainViewmodel.chengeDialogFlag(true) })
-            {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Clothes add")
-            }
-        }) {
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Digital Closet") }, actions = {
+                    IconButton(onClick = { mainViewmodel.chengeDialogFlag(true) }) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "Clothes add")
+                    }
+                })
+        }
+
+    ) { paddingValues ->
 
         val cloths by mainViewmodel.cloths.collectAsState(initial = emptyList())
 
         ClothsList(
-            Cloths = cloths,
+            modifier = Modifier.padding(paddingValues = paddingValues),
+            cloths = cloths,
             onClickRow = {
                 mainViewmodel.setEditing(it)
                 mainViewmodel.chengeDialogFlag(true)
             },
-            onClickDelete = { mainViewmodel.deleteCloth(it) }
-        )
+            onClickDelete = { mainViewmodel.deleteCloth(it) })
     }
 }
 
