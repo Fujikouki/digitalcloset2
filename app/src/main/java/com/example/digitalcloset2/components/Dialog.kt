@@ -96,6 +96,7 @@ fun Dialog(mainViewmodel: MainViewmodel, navController: NavController) {
                     Toast.makeText(context, "名前を入力してください", Toast.LENGTH_SHORT).show()
                 } else {
                     mainViewmodel.chengeDialogFlag(false)
+                    mainViewmodel.chengeOnCamera(false)
                     mainViewmodel.chengeUpdata(false)
                     if (mainViewmodel.isEditing) {
                         mainViewmodel.updateCloth()
@@ -110,6 +111,7 @@ fun Dialog(mainViewmodel: MainViewmodel, navController: NavController) {
         dismissButton = {
             Button(onClick = {
                 mainViewmodel.chengeUpdata(false)
+                mainViewmodel.chengeOnCamera(false)
                 mainViewmodel.chengeDialogFlag(false)
             }) {
                 Text(text = "キャンセル")
