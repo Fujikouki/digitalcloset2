@@ -29,44 +29,60 @@ class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : Vi
     private val _cameraUiState = MutableStateFlow(CameraUisate())
     val cameraUiState: StateFlow<CameraUisate> = _cameraUiState.asStateFlow()
 
+    private val _deletingData = MutableStateFlow(ClothesData())
 
-    fun chengeDialogFlag(flag: Boolean) {
-        _mainUiState.value = _mainUiState.value.copy(dialogFlag = flag)
+
+    fun changeClothesDialogFlag(flag: Boolean) {
+        _mainUiState.value = _mainUiState.value.copy(clothesDialogFlag = flag)
     }
 
-    fun chengeClothesName(name: String) {
-        _clothesDialog.value = _clothesDialog.value.copy(ClothesName = name)
+    fun changeDeletingDialogFlag(flag: Boolean) {
+        _mainUiState.value = _mainUiState.value.copy(deletingDialogFlag = flag)
     }
 
-    fun chengeClothesType(type: String) {
-        _clothesDialog.value = _clothesDialog.value.copy(ClothesType = type)
+    fun changeName(name: String) {
+        _clothesDialog.value = _clothesDialog.value.copy(name = name)
     }
 
-    fun chengeClothesColor(color: String) {
-        _clothesDialog.value = _clothesDialog.value.copy(ClothesColor = color)
+
+    fun changeColor(color: String) {
+        _clothesDialog.value = _clothesDialog.value.copy(color = color)
     }
 
-    fun chengeClothesScene(scene: String) {
-        _clothesDialog.value = _clothesDialog.value.copy(ClothesScene = scene)
+    fun changeCategory(category: String) {
+        _clothesDialog.value = _clothesDialog.value.copy(category = category)
     }
 
-    fun chengeClothesImage(image: String) {
-        _clothesDialog.value = _clothesDialog.value.copy(ClothesImage = image)
+    fun changeSize(size: String) {
+        _clothesDialog.value = _clothesDialog.value.copy(size = size)
     }
 
-    fun chengeUpdata(flag: Boolean) {
+    fun changeBrand(brand: String) {
+        _clothesDialog.value = _clothesDialog.value.copy(brand = brand)
+    }
+
+    fun changeLike(like: Boolean) {
+        _clothesDialog.value = _clothesDialog.value.copy(like = like)
+    }
+
+
+    fun categoryImage(image: String) {
+        _clothesDialog.value = _clothesDialog.value.copy(image = image)
+    }
+
+    fun categoryUpdata(flag: Boolean) {
         _mainUiState.value = _mainUiState.value.copy(isUpdata = flag)
     }
 
-    fun chengeOnCamera(flag: Boolean) {
+    fun categoryOnCamera(flag: Boolean) {
         _mainUiState.value = _mainUiState.value.copy(onCamera = flag)
     }
 
-    fun chengeSucceededShooting() {
+    fun categorySucceededShooting() {
 
         _cameraUiState.value = _cameraUiState.value.copy(
             succeededShooting = true,
-            imagePath = _clothesDialog.value.ClothesImage
+            imagePath = _clothesDialog.value.image
         )
 
     }
@@ -98,31 +114,43 @@ class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : Vi
         }
     }
 
-    fun deleteCloth(cloth: ClothesData) {
+    fun deleteCloth() {
         viewModelScope.launch {
-            clothesDao.deleteClothes(cloth)
+            clothesDao.deleteClothes(_deletingData.value)
         }
+    }
+
+    fun cleanDeleteDate() {
+        _deletingData.value = ClothesData()
+    }
+
+    fun setDeletingDate(cloth: ClothesData) {
+        _deletingData.value = cloth
     }
 
     fun setEditing(cloth: ClothesData) {
         editingClothe = cloth
         _clothesDialog.value = _clothesDialog.value.copy(
-            ClothesName = cloth.ClothesName,
-            ClothesType = cloth.ClothesType,
-            ClothesColor = cloth.ClothesColor,
-            ClothesScene = cloth.ClothesScene,
-            ClothesImage = cloth.ClothesImage
+            name = cloth.name,
+            category = cloth.category,
+            color = cloth.color,
+            size = cloth.size,
+            brand = cloth.brand,
+            like = cloth.like,
+            image = cloth.image,
         )
     }
 
     fun updateCloth() {
         editingClothe?.let { cloth ->
             viewModelScope.launch {
-                cloth.ClothesName = _clothesDialog.value.ClothesName
-                cloth.ClothesType = _clothesDialog.value.ClothesType
-                cloth.ClothesColor = _clothesDialog.value.ClothesColor
-                cloth.ClothesScene = _clothesDialog.value.ClothesScene
-                cloth.ClothesImage = clothesImage
+                cloth.name = clothesDialog.value.name
+                cloth.category = clothesDialog.value.category
+                cloth.color = clothesDialog.value.color
+                cloth.size = clothesDialog.value.size
+                cloth.brand = clothesDialog.value.brand
+                cloth.like = clothesDialog.value.like
+                cloth.image = clothesImage
                 clothesDao.updateClothes(clothes = cloth)
             }
         }
@@ -131,28 +159,23 @@ class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : Vi
     fun resetCloth() {
         editingClothe = null
         _clothesDialog.value = _clothesDialog.value.copy(
-            ClothesName = "",
-            ClothesType = "",
-            ClothesColor = "",
-            ClothesScene = "",
-            ClothesImage = ""
+            name = "",
+            category = "",
+            color = "",
+            size = "",
+            brand = "",
+            like = false,
+            image = ""
         )
 
     }
 }
 
-data class DialogUisate(
-    var ClothesName: String = "",
-    var ClothesType: String = "",
-    var ClothesColor: String = "",
-    var ClothesScene: String = "",
-    var ClothesImage: String = ""
-)
-
 data class MainUiState(
-    val dialogFlag: Boolean = false,
+    val clothesDialogFlag: Boolean = false,
     val isUpdata: Boolean = false,
     val onCamera: Boolean = false,
+    val deletingDialogFlag: Boolean = false
 )
 
 data class CameraUisate(

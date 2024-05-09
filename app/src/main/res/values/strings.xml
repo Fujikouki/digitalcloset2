@@ -1,3 +1,69 @@
 <resources>
     <string name="app_name">DigitalCloset2</string>
+
+    <string name="clothName">名前</string>
+    <string name="clothCategory">種類</string>
+    <string name="clothColor">色</string>
+    <string name="clothSize">サイズ</string>
+    <string name="clothBrand">ブランド</string>
+    <string name="clothLike">お気に入り</string>
+    <string name="clothImage">画像</string>
+
+    <string name="newAdd">新規作成</string>
+    <string name="addCloth">追加</string>
+    <string name="editCloth">編集</string>
+    <string name="deleteCloth">削除</string>
+    <string name="cancel">キャンセル</string>
+    <string name="save">保存</string>
+    <string name="addingPhoto">写真を追加</string>
+    <string name="selectPhoto">写真を選択</string>
+    <string name="takePhoto">写真を撮影</string>
+    <string name="deletePhoto">写真を削除</string>
+    <string name="pleaseInputName">名前を入力してください</string>
+
+    <string-array name="category">
+        <item>トップス</item>
+        <item>ボトムス</item>
+        <item>ワンピース</item>
+        <item>アウター</item>
+        <item>スーツ</item>
+        <item>インナーウェア</item>
+        <item>スポーツウェア</item>
+        <item>フォーマルドレス</item>
+        <item>カジュアルドレス</item>
+        <item>シューズ</item>
+        <item>バッグ</item>
+        <item>アクセサリー</item>
+        <item>その他</item>
+    </string-array>
+
+    <string-array name="color">
+        <item>赤</item>
+        <item>ピンク</item>
+        <item>オレンジ</item>
+        <item>黄色</item>
+        <item>緑</item>
+        <item>青</item>
+        <item>紫</item>
+        <item>白</item>
+        <item>黒</item>
+        <item>グレー</item>
+        <item>茶色</item>
+        <item>ベージュ</item>
+        <item>その他</item>
+    </string-array>
+
+    <string-array name="size">
+        <item>XXS</item>
+        <item>XS</item>
+        <item>S</item>
+        <item>M</item>
+        <item>L</item>
+        <item>XL</item>
+        <item>XXL</item>
+        <item>XXXL</item>
+        <item>フリーサイズ</item>
+    </string-array>
+
+
 </resources>
