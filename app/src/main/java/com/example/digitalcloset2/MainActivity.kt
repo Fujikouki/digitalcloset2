@@ -26,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
+import com.example.digitalcloset2.components.ClothesDetailScreen
 import com.example.digitalcloset2.components.ClothsList
 import com.example.digitalcloset2.components.Dialog
 import com.example.digitalcloset2.components.PermissionTest
@@ -66,6 +67,9 @@ fun HostScreen(mainViewmodel: MainViewmodel = hiltViewModel()) {
                 PermissionTest(mainViewmodel = mainViewmodel, navController = navController)
             }
         }
+        composable(route = ScreenRoute.ClothDetailScreen.root) {
+            ClothesDetailScreen(mainViewmodel = mainViewmodel)
+        }
     }
 
 }
@@ -98,9 +102,10 @@ fun MainUi(mainViewmodel: MainViewmodel, uiState: MainUiState, navController: Na
             cloths = cloths,
             onClickRow = {
                 mainViewmodel.setEditing(it)
-                mainViewmodel.chengeDialogFlag(true)
+                navController.navigate(ScreenRoute.ClothDetailScreen.root)
             },
-            onClickDelete = { mainViewmodel.deleteCloth(it) })
+            onClickDelete = { mainViewmodel.deleteCloth(it) }
+        )
     }
 }
 
