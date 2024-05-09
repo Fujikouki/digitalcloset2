@@ -51,12 +51,12 @@ fun ClothCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp),
-                model = Uri.parse(cloth.ClothesImage),
+                model = Uri.parse(cloth.image),
                 contentDescription = "服の写真",
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = cloth.ClothesName)
+            Text(text = cloth.name)
         }
     }
 }
@@ -66,21 +66,12 @@ fun ClothCard(
 fun ClothsRowTest() {
     ClothCard(
         cloth = ClothesData(
-            ClothesName = "青色の服",
-            ClothesType = "Tシャツ",
-            ClothesColor = "青",
-            ClothesScene = "夏",
-            ClothesImage = R.drawable.testimage2.toString()
+            name = "青色の服",
+            category = "Tシャツ",
+            color = "青",
+            size = "M",
+            image = R.drawable.testimage2.toString()
         ),
         onClickRow = {},
         onClickDelete = {})
 }
-
-/*
-IconButton(
-onClick = { onClickDelete(cloth)
-})
-{
-    Icon(imageVector = Icons.Default.Delete, contentDescription = "DeleteButton")
-    GlideImage(model = Uri.parse(cloth.ClothesImage), contentDescription = "服の写真")
-}*/

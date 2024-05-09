@@ -21,18 +21,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.digitalcloset2.MainViewmodel
+import com.example.digitalcloset2.R
 import com.example.digitalcloset2.ScreenRoute
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Dialog(mainViewmodel: MainViewmodel, navController: NavController) {
+fun ClothesDialog(mainViewmodel: MainViewmodel, navController: NavController) {
 
     val mainUiState by mainViewmodel.mainUiState.collectAsState()
 
     val clothesDialogUiState by mainViewmodel.clothesDialog.collectAsState()
+
+    val categories = stringArrayResource(id = R.array.category)
+    val colors = stringArrayResource(id = R.array.color)
+    val sizes = stringArrayResource(id = R.array.size)
 
     val context = LocalContext.current
 
@@ -44,60 +51,67 @@ fun Dialog(mainViewmodel: MainViewmodel, navController: NavController) {
         }
     }
 
+
     AlertDialog(
         onDismissRequest = {
-            mainViewmodel.chengeDialogFlag(false)
+            mainViewmodel.changeClothesDialogFlag(false)
         },
-        title = { Text(text = if (mainViewmodel.isEditing) "更新" else "新規作成") },
+        title = {
+            Text(
+                text = if (mainViewmodel.isEditing) stringResource(id = R.string.editCloth) else stringResource(
+                    id = R.string.newAdd
+                )
+            )
+        },
         text = {
             Column {
-                Text(text = "服の名前")
+                Text(text = stringResource(id = R.string.clothName))
                 TextField(
-                    value = clothesDialogUiState.ClothesName,
-                    onValueChange = { mainViewmodel.chengeClothesName(it) })
+                    value = clothesDialogUiState.name,
+                    onValueChange = { mainViewmodel.changeName(it) })
                 DropdownMenu(
                     mainViewModel = mainViewmodel,
-                    _title = "服の種類",
-                    _list = listOf("Top", "Bottom", "Dress", "Jacket"),
-                    containsValue = clothesDialogUiState.ClothesType
+                    title = stringResource(id = R.string.clothCategory),
+                    item = categories,
+                    containsValue = clothesDialogUiState.category
                 ) { selectionOption ->
-                    mainViewmodel.chengeClothesType(selectionOption)
+                    mainViewmodel.changeCategory(selectionOption)
                 }
                 DropdownMenu(
                     mainViewModel = mainViewmodel,
-                    _title = "服の色",
-                    _list = listOf("Red", "Blue", "Green", "Black", "White"),
-                    containsValue = clothesDialogUiState.ClothesColor
+                    title = stringResource(id = R.string.clothColor),
+                    item = colors,
+                    containsValue = clothesDialogUiState.color
                 ) { selectionOption ->
-                    mainViewmodel.chengeClothesColor(selectionOption)
+                    mainViewmodel.changeColor(selectionOption)
                 }
                 DropdownMenu(
                     mainViewModel = mainViewmodel,
-                    _title = "シーズン",
-                    _list = listOf("Casual", "Formal", "Party", "Workout"),
-                    containsValue = clothesDialogUiState.ClothesScene
+                    title = stringResource(id = R.string.clothSize),
+                    item = sizes,
+                    containsValue = clothesDialogUiState.size
                 ) { selectionOption ->
-                    mainViewmodel.chengeClothesScene(selectionOption)
+                    mainViewmodel.changeSize(selectionOption)
                 }
                 TextButton(
                     onClick = {
-                        mainViewmodel.chengeUpdata(true)
-                        mainViewmodel.chengeOnCamera(true)
+                        mainViewmodel.categoryUpdata(true)
+                        mainViewmodel.categoryOnCamera(true)
                         navController.navigate(ScreenRoute.ShootingScreen.root)
                     }
                 ) {
-                    Text(text = "写真を追加")
+                    Text(text = stringResource(id = R.string.addingPhoto))
                 }
             }
         },
         confirmButton = {
             Button(onClick = {
-                if (clothesDialogUiState.ClothesName == "") {
-                    Toast.makeText(context, "名前を入力してください", Toast.LENGTH_SHORT).show()
+                if (clothesDialogUiState.name == "") {
+                    Toast.makeText(context, R.string.pleaseInputName, Toast.LENGTH_SHORT).show()
                 } else {
-                    mainViewmodel.chengeDialogFlag(false)
-                    mainViewmodel.chengeOnCamera(false)
-                    mainViewmodel.chengeUpdata(false)
+                    mainViewmodel.changeClothesDialogFlag(false)
+                    mainViewmodel.categoryOnCamera(false)
+                    mainViewmodel.categoryUpdata(false)
                     if (mainViewmodel.isEditing) {
                         mainViewmodel.updateCloth()
                     } else {
@@ -105,16 +119,16 @@ fun Dialog(mainViewmodel: MainViewmodel, navController: NavController) {
                     }
                 }
             }) {
-                Text(text = "保存")
+                Text(text = stringResource(id = R.string.save))
             }
         },
         dismissButton = {
             Button(onClick = {
-                mainViewmodel.chengeUpdata(false)
-                mainViewmodel.chengeOnCamera(false)
-                mainViewmodel.chengeDialogFlag(false)
+                mainViewmodel.categoryUpdata(false)
+                mainViewmodel.categoryOnCamera(false)
+                mainViewmodel.changeClothesDialogFlag(false)
             }) {
-                Text(text = "キャンセル")
+                Text(text = stringResource(id = R.string.cancel))
             }
         }
     )
@@ -124,15 +138,14 @@ fun Dialog(mainViewmodel: MainViewmodel, navController: NavController) {
 @Composable
 fun DropdownMenu(
     mainViewModel: MainViewmodel,
-    _title: String,
-    _list: List<String>,
+    title: String,
+    item: Array<String>,
     containsValue: String,
     onItemSelected: (String) -> Unit
 ) {
-    val list: List<String> = _list
-    val title: String = _title
+
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(list[0]) }
+    var selectedOptionText by remember { mutableStateOf(item[0]) }
     if (mainViewModel.isEditing) {
         selectedOptionText = containsValue
     }
@@ -154,7 +167,7 @@ fun DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            list.forEach { selectionOption ->
+            item.forEach { selectionOption ->
                 DropdownMenuItem(
                     text = { Text(selectionOption) },
                     onClick = {

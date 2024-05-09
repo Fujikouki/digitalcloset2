@@ -56,14 +56,19 @@ fun ClothesDetailScreen(modifier: Modifier = Modifier, mainViewmodel: MainViewmo
             horizontalAlignment = Alignment.CenterHorizontally
         )
         {
-            GlideImage(model = Uri.parse(cloth.ClothesImage), contentDescription = "")
+            GlideImage(model = Uri.parse(cloth.image), contentDescription = "")
             Spacer(modifier = modifier.padding(8.dp))
-            Text(text = "服の名前: ${cloth.ClothesName}")
+            Text(text = "服の名前: ${cloth.name}")
             Spacer(modifier = modifier.padding(8.dp))
-            Text(text = "服の種類: ${cloth.ClothesType}")
+            Text(text = "服の種類: ${cloth.category}")
             Spacer(modifier = modifier.padding(8.dp))
-            Text(text = "服の色: ${cloth.ClothesColor}")
+            Text(text = "服の色: ${cloth.color}")
             Spacer(modifier = modifier.padding(8.dp))
+            Text(text = "サイズ: ${cloth.size}")
+            Spacer(modifier = modifier.padding(8.dp))
+            Text(text = "ブランド: ${cloth.brand}")
+            Spacer(modifier = modifier.padding(8.dp))
+            Text(text = "お気に入り: ${cloth.like}")
         }
     }
 }

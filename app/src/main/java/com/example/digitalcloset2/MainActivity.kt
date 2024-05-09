@@ -27,8 +27,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
 import com.example.digitalcloset2.components.ClothesDetailScreen
+import com.example.digitalcloset2.components.ClothesDialog
 import com.example.digitalcloset2.components.ClothsList
-import com.example.digitalcloset2.components.Dialog
+import com.example.digitalcloset2.components.DeletingDialog
 import com.example.digitalcloset2.components.PermissionTest
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -80,14 +81,22 @@ fun HostScreen(mainViewmodel: MainViewmodel = hiltViewModel()) {
 @Composable
 fun MainUi(mainViewmodel: MainViewmodel, uiState: MainUiState, navController: NavController) {
 
-    if (uiState.dialogFlag) {
-        Dialog(mainViewmodel = mainViewmodel, navController = navController)
+
+    if (uiState.clothesDialogFlag) {
+        ClothesDialog(mainViewmodel = mainViewmodel, navController = navController)
     }
+
+    if (uiState.deletingDialogFlag) {
+        DeletingDialog(
+            onDismiss = { mainViewmodel.changeDeletingDialogFlag(false); mainViewmodel.cleanDeleteDate() },
+            onDelete = { mainViewmodel.deleteCloth() })
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = "Digital Closet") }, actions = {
-                    IconButton(onClick = { mainViewmodel.chengeDialogFlag(true) }) {
+                    IconButton(onClick = { mainViewmodel.changeClothesDialogFlag(true) }) {
                         Icon(imageVector = Icons.Default.Add, contentDescription = "Clothes add")
                     }
                 })
@@ -104,7 +113,10 @@ fun MainUi(mainViewmodel: MainViewmodel, uiState: MainUiState, navController: Na
                 mainViewmodel.setEditing(it)
                 navController.navigate(ScreenRoute.ClothDetailScreen.root)
             },
-            onClickDelete = { mainViewmodel.deleteCloth(it) }
+            onClickDelete = {
+                mainViewmodel.setDeletingDate(it)
+                mainViewmodel.changeDeletingDialogFlag(true)
+            }
         )
     }
 }

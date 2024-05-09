@@ -101,8 +101,8 @@ class CameraManager() {
 
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         val msg = "Photo capture succeeded: ${output.savedUri}"
-                        mainViewmodel.chengeClothesImage(output.savedUri.toString())
-                        mainViewmodel.chengeSucceededShooting()
+                        mainViewmodel.categoryImage(output.savedUri.toString())
+                        mainViewmodel.categorySucceededShooting()
                         Log.d(TAG, msg)
                     }
                 }

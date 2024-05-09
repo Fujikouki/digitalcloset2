@@ -10,19 +10,19 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ClothesDao {
     @Insert
-    suspend fun insertClothesData(clothes:ClothesData)
+    suspend fun insertClothesData(clothes: ClothesData)
 
     @Query("SELECT * FROM ClothesData")
-    fun loadAllClothes():Flow<List<ClothesData>>
+    fun loadAllClothes(): Flow<List<ClothesData>>
 
-    @Query("SELECT ClothesName,ClothesImage FROM ClothesData")
-    fun loadNameClothes():Flow<List<CardData>>
+    @Query("SELECT name,image FROM ClothesData")
+    fun loadNameClothes(): Flow<List<CardData>>
 
     @Update
     suspend fun updateClothes(clothes: ClothesData)
 
     @Delete
-    suspend  fun deleteClothes(clothes: ClothesData)
+    suspend fun deleteClothes(clothes: ClothesData)
 
 
 }
