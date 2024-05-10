@@ -70,23 +70,48 @@ fun MainContent(
         if (cameraUisate.succeededShooting) {
             PhotoConfirmationScreen(mainViewmodel = mainViewmodel, navController = navController)
         } else {
-            TestScreen(mainViewmodel = mainViewmodel)
+            ShootingScreen(mainViewmodel = mainViewmodel, navController = navController)
         }
     } else {
-        NoPermission(onRequestPermission)
+        NoPermission(onRequestPermission, navController)
     }
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoPermission(onRequestPermission: () -> Unit) {
+fun NoPermission(onRequestPermission: () -> Unit, navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Button(onClick = onRequestPermission) {
-            Text(text = "カメラの許可を与えてください")
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = stringResource(id = R.string.takePhoto)) },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+                        }
+                    }
+                )
+            },
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+
+            ) {
+                Button(
+                    onClick = onRequestPermission
+                ) {
+                    Text(text = "カメラの許可を与えてください")
+                }
+            }
         }
     }
 }
@@ -94,7 +119,7 @@ fun NoPermission(onRequestPermission: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TestScreen(mainViewmodel: MainViewmodel) {
+fun ShootingScreen(mainViewmodel: MainViewmodel, navController: NavController) {
 
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -110,7 +135,7 @@ fun TestScreen(mainViewmodel: MainViewmodel) {
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.takePhoto)) },
                 navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
                     }
                 }
@@ -125,13 +150,18 @@ fun TestScreen(mainViewmodel: MainViewmodel) {
             }
         },
     ) { innerPadding ->
-        AndroidView(
-            factory = { previewView },
+        Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
-                .aspectRatio(4f / 3f)
-        )
+                .fillMaxSize(),
+        ) {
+            AndroidView(
+                factory = { previewView },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .aspectRatio(4f / 3f)
+            )
+        }
     }
 }
 
