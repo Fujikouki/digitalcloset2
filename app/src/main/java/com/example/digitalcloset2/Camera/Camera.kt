@@ -41,7 +41,9 @@ class CameraManager() {
         val cameraProvider = cameraProviderFuture.get()
 
 
-        val preview = Preview.Builder().build()
+        val preview = Preview.Builder()
+            .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+            .build()
 
         val cameraSelector = CameraSelector.Builder()
             .requireLensFacing(CameraSelector.LENS_FACING_BACK)
