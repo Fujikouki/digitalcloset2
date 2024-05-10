@@ -176,13 +176,15 @@ fun PhotoConfirmationScreen(mainViewmodel: MainViewmodel, navController: NavCont
 
         val uiState by mainViewmodel.cameraUiState.collectAsState()
 
-        Text(text = "写真を撮りました")
-        GlideImage(model = Uri.parse(uiState.imagePath), contentDescription = "服の写真")
+        GlideImage(
+            model = Uri.parse(uiState.imagePath),
+            contentDescription = stringResource(id = R.string.clothImage)
+        )
         Button(onClick = { navController.popBackStack() }) {
-            Text(text = "保存")
+            Text(text = stringResource(id = R.string.useThisPicture))
         }
         Button(onClick = { mainViewmodel.clearImage() }) {
-            Text(text = "再撮影")
+            Text(text = stringResource(id = R.string.reshooting))
         }
     }
     DisposableEffect(Unit) {
