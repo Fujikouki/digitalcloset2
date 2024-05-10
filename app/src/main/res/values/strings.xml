@@ -7,7 +7,7 @@
     <string name="clothSize">サイズ</string>
     <string name="clothBrand">ブランド</string>
     <string name="clothLike">お気に入り</string>
-    <string name="clothImage">画像</string>
+    <string name="clothImage">服の画像</string>
 
     <string name="newAdd">新規作成</string>
     <string name="addCloth">追加</string>
@@ -16,12 +16,15 @@
     <string name="cancel">キャンセル</string>
     <string name="save">保存</string>
     <string name="addingPhoto">写真を追加</string>
+    <string name="useThisPicture">この写真を使う</string>
     <string name="selectPhoto">写真を選択</string>
     <string name="takePhoto">写真を撮影</string>
+    <string name="reshooting">再撮影</string>
     <string name="deletePhoto">写真を削除</string>
     <string name="pleaseInputName">名前を入力してください</string>
 
     <string-array name="category">
+        <item>未設定</item>
         <item>トップス</item>
         <item>ボトムス</item>
         <item>ワンピース</item>
@@ -38,6 +41,7 @@
     </string-array>
 
     <string-array name="color">
+        <item>未設定</item>
         <item>赤</item>
         <item>ピンク</item>
         <item>オレンジ</item>
@@ -54,6 +58,7 @@
     </string-array>
 
     <string-array name="size">
+        <item>未設定</item>
         <item>XXS</item>
         <item>XS</item>
         <item>S</item>

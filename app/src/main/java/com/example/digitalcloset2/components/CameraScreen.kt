@@ -1,19 +1,21 @@
 package com.example.digitalcloset2.components
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -23,12 +25,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.digitalcloset2.Camera.CameraManager
 import com.example.digitalcloset2.MainViewmodel
+import com.example.digitalcloset2.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
@@ -65,24 +70,48 @@ fun MainContent(
         if (cameraUisate.succeededShooting) {
             PhotoConfirmationScreen(mainViewmodel = mainViewmodel, navController = navController)
         } else {
-            TestScreen(mainViewmodel = mainViewmodel)
+            ShootingScreen(mainViewmodel = mainViewmodel, navController = navController)
         }
     } else {
-        NoPermission(onRequestPermission)
+        NoPermission(onRequestPermission, navController)
     }
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoPermission(onRequestPermission: () -> Unit) {
+fun NoPermission(onRequestPermission: () -> Unit, navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    )
-    {
-        Button(onClick = onRequestPermission) {
-            Text(text = "カメラの許可を与えてください")
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = stringResource(id = R.string.takePhoto)) },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+                        }
+                    }
+                )
+            },
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+
+            ) {
+                Button(
+                    onClick = onRequestPermission
+                ) {
+                    Text(text = "カメラの許可を与えてください")
+                }
+            }
         }
     }
 }
@@ -90,9 +119,7 @@ fun NoPermission(onRequestPermission: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TestScreen(mainViewmodel: MainViewmodel) {
-
-    Log.d("CameraScreen", "TestScreen")
+fun ShootingScreen(mainViewmodel: MainViewmodel, navController: NavController) {
 
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -104,13 +131,37 @@ fun TestScreen(mainViewmodel: MainViewmodel) {
     }
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = stringResource(id = R.string.takePhoto)) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+                    }
+                }
+            )
+        },
         floatingActionButton = {
-            FloatingActionButton(onClick = { cameraManager.takePhoto(context, mainViewmodel) })
-            {
-                Icon(imageVector = Icons.Default.Send, contentDescription = "Clothes add")
+            FloatingActionButton(onClick = { cameraManager.takePhoto(context, mainViewmodel) }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_camera_alt_24),
+                    contentDescription = "camera"
+                )
             }
-        }) { innerPadding ->
-        AndroidView(factory = { previewView }, modifier = Modifier.padding(innerPadding))
+        },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+        ) {
+            AndroidView(
+                factory = { previewView },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .aspectRatio(4f / 3f)
+            )
+        }
     }
 }
 
@@ -121,18 +172,19 @@ fun PhotoConfirmationScreen(mainViewmodel: MainViewmodel, navController: NavCont
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    )
-    {
+    ) {
 
         val uiState by mainViewmodel.cameraUiState.collectAsState()
 
-        Text(text = "写真を撮りました")
-        GlideImage(model = Uri.parse(uiState.imagePath), contentDescription = "服の写真")
+        GlideImage(
+            model = Uri.parse(uiState.imagePath),
+            contentDescription = stringResource(id = R.string.clothImage)
+        )
         Button(onClick = { navController.popBackStack() }) {
-            Text(text = "保存")
+            Text(text = stringResource(id = R.string.useThisPicture))
         }
         Button(onClick = { mainViewmodel.clearImage() }) {
-            Text(text = "再撮影")
+            Text(text = stringResource(id = R.string.reshooting))
         }
     }
     DisposableEffect(Unit) {
