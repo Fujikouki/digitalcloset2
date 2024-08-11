@@ -2,11 +2,14 @@ package com.example.digitalcloset2.components
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -58,17 +62,34 @@ fun ClothesDetailScreen(modifier: Modifier = Modifier, mainViewmodel: MainViewmo
         {
             GlideImage(model = Uri.parse(cloth.image), contentDescription = "")
             Spacer(modifier = modifier.padding(8.dp))
-            Text(text = "服の名前: ${cloth.name}")
-            Spacer(modifier = modifier.padding(8.dp))
-            Text(text = "服の種類: ${cloth.category}")
-            Spacer(modifier = modifier.padding(8.dp))
-            Text(text = "服の色: ${cloth.color}")
-            Spacer(modifier = modifier.padding(8.dp))
-            Text(text = "サイズ: ${cloth.size}")
-            Spacer(modifier = modifier.padding(8.dp))
-            Text(text = "ブランド: ${cloth.brand}")
-            Spacer(modifier = modifier.padding(8.dp))
-            Text(text = "お気に入り: ${cloth.like}")
+            Row {
+                Column {
+                    Text(text = "服の名前: ${cloth.name}")
+                    Spacer(modifier = modifier.padding(8.dp))
+                    Text(text = "服の種類: ${cloth.category}")
+                    Spacer(modifier = modifier.padding(8.dp))
+                    Text(text = "服の色: ${cloth.color}")
+                }
+                Spacer(modifier = modifier.padding(8.dp))
+                Column {
+                    Text(text = "サイズ: ${cloth.size}")
+                    Spacer(modifier = modifier.padding(8.dp))
+                    Text(text = "ブランド: ${cloth.brand}")
+                    Spacer(modifier = modifier.padding(8.dp))
+                    if (true) {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = "Like",
+                            tint = Color(0xFFE57373)
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.FavoriteBorder,
+                            contentDescription = "Not Like"
+                        )
+                    }
+                }
+            }
         }
     }
 }
