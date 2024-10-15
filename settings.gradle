@@ -16,3 +16,4 @@ rootProject.name = "DigitalCloset2"
 include ':app'
 include ':domain'
 include ':data'
+include ':feature'
