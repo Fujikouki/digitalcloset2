@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.digitalcloset2"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.digitalcloset2"
