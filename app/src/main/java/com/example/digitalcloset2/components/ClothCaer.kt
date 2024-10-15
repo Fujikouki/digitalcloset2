@@ -20,8 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.example.digitalcloset2.ClothesData
 import com.example.digitalcloset2.R
+import com.example.domain.model.clothes.ClothesData
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable

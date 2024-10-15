@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
 }
 
@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId = "com.example.digitalcloset2"
         minSdk = 29
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -43,19 +43,17 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.2"
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
     viewBinding {
         enable = true
     }
-    packagingOptions {
-        resources {
-            excludes += setOf("/META-INF/{AL2.0,LGPL2.1}")
-        }
-    }
 }
 
 dependencies {
+
+    implementation(project(":domain"))
+    implementation(project(":data"))
 
     // 画像読み込み
     implementation("com.github.bumptech.glide:compose:1.0.0-alpha.1")
@@ -80,17 +78,9 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-compiler:2.44")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-
-    // Room
-    val room_version = "2.5.0"
-
-    implementation("androidx.room:room-runtime:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
-    kapt("androidx.room:room-compiler:$room_version")
-    implementation("androidx.room:room-ktx:$room_version")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation("com.google.dagger:hilt-android:2.52")
+    ksp("com.google.dagger:hilt-compiler:2.52")
 
     implementation("androidx.core:core-ktx:1.8.0")
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
@@ -108,8 +98,4 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-}
-
-kapt {
-    correctErrorTypes = true
 }

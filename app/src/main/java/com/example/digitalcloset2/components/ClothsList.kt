@@ -6,7 +6,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.digitalcloset2.ClothesData
+import com.example.domain.model.clothes.ClothesData
 
 
 @Composable
