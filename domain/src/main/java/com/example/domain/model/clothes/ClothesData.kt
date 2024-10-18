@@ -1,12 +1,6 @@
-package com.example.digitalcloset2
+package com.example.domain.model.clothes
 
-
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-@Entity
 data class ClothesData(
-    @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     var name: String = "未設定",
     var category: String = "未設定",

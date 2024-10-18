@@ -7,23 +7,49 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.model.clothes.ClothesData
+import com.example.domain.usecase.DeleteClothesUseCase
+import com.example.domain.usecase.GetAllClothesUseCase
+import com.example.domain.usecase.InsertClothesUseCase
+import com.example.domain.usecase.UpdateClothesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
-class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : ViewModel() {
+class MainViewmodel @Inject constructor(
+    private val insertClothesUseCase: InsertClothesUseCase,
+    private val getAllClothesUseCase: GetAllClothesUseCase,
+    private val updateClothesUseCase: UpdateClothesUseCase,
+    private val deleteClothesUseCase: DeleteClothesUseCase,
+) : ViewModel() {
+
+    val clothes: StateFlow<List<ClothesData>> = getAllClothesUseCase().stateIn(
+        scope = viewModelScope, started = SharingStarted.Lazily, emptyList()
+    )
+
 
     private val _mainUiState = MutableStateFlow(MainUiState())
 
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
 
-    private val _clothesDialog = MutableStateFlow(ClothesData())
+    private val _clothesDialog = MutableStateFlow(
+        ClothesData(
+            name = "",
+            category = "",
+            color = "",
+            size = "",
+            brand = "",
+            like = false,
+            image = "",
+        )
+    )
     val clothesDialog: StateFlow<ClothesData> = _clothesDialog.asStateFlow()
 
     private val _cameraUiState = MutableStateFlow(CameraUisate())
@@ -103,25 +129,31 @@ class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : Vi
     val isEditing: Boolean
         get() = editingClothe != null
 
-    val cloths = clothesDao.loadAllClothes().distinctUntilChanged()
-
 
     fun createCloth() {
         viewModelScope.launch {
             val newClothe = clothesDialog.value
-            clothesDao.insertClothesData(newClothe)
+            insertClothesUseCase(newClothe)
             Log.d("main", "success newCloth")
         }
     }
 
     fun deleteCloth() {
         viewModelScope.launch {
-            clothesDao.deleteClothes(_deletingData.value)
+            deleteClothesUseCase(_deletingData.value)
         }
     }
 
     fun cleanDeleteDate() {
-        _deletingData.value = ClothesData()
+        _deletingData.value = ClothesData(
+            name = "",
+            category = "",
+            color = "",
+            size = "",
+            brand = "",
+            like = false,
+            image = "",
+        )
     }
 
     fun setDeletingDate(cloth: ClothesData) {
@@ -151,7 +183,7 @@ class MainViewmodel @Inject constructor(private val clothesDao: ClothesDao) : Vi
                 cloth.brand = clothesDialog.value.brand
                 cloth.like = clothesDialog.value.like
                 cloth.image = clothesImage
-                clothesDao.updateClothes(clothes = cloth)
+                updateClothesUseCase(cloth)
             }
         }
     }
