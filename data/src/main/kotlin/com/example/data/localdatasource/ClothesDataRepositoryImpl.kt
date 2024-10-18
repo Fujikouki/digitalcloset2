@@ -3,7 +3,6 @@ package com.example.data.localdatasource
 import com.example.domain.model.clothes.ClothesData
 import com.example.domain.repository.ClothesDataRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ClothesDataRepositoryImpl @Inject constructor(
@@ -24,21 +23,7 @@ class ClothesDataRepositoryImpl @Inject constructor(
     }
 
     override fun loadAllClothes(): Flow<List<ClothesData>> {
-        return dao.loadAllClothes().map { clothesList ->
-            clothesList.map { clothes ->
-                ClothesData(
-                    id = clothes.id,
-                    name = clothes.name,
-                    category = clothes.category,
-                    color = clothes.color,
-                    size = clothes.size,
-                    brand = clothes.brand,
-                    like = clothes.like,
-                    image = clothes.image
-                )
-            }
-        }
-
+        return dao.loadAllClothes()
     }
 
     override suspend fun updateClothes(clothes: ClothesData) {

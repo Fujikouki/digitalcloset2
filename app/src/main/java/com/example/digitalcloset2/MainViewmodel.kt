@@ -14,9 +14,10 @@ import com.example.domain.usecase.InsertClothesUseCase
 import com.example.domain.usecase.UpdateClothesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,13 +30,17 @@ class MainViewmodel @Inject constructor(
     private val deleteClothesUseCase: DeleteClothesUseCase,
 ) : ViewModel() {
 
+    val clothes: StateFlow<List<ClothesData>> = getAllClothesUseCase().stateIn(
+        scope = viewModelScope, started = SharingStarted.Lazily, emptyList()
+    )
+
+
     private val _mainUiState = MutableStateFlow(MainUiState())
 
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
 
     private val _clothesDialog = MutableStateFlow(
         ClothesData(
-            id = 0,
             name = "",
             category = "",
             color = "",
@@ -124,8 +129,6 @@ class MainViewmodel @Inject constructor(
     val isEditing: Boolean
         get() = editingClothe != null
 
-    val cloths = getAllClothesUseCase().distinctUntilChanged()
-
 
     fun createCloth() {
         viewModelScope.launch {
@@ -143,7 +146,6 @@ class MainViewmodel @Inject constructor(
 
     fun cleanDeleteDate() {
         _deletingData.value = ClothesData(
-            id = 0,
             name = "",
             category = "",
             color = "",

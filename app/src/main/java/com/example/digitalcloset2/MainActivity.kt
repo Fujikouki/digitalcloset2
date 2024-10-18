@@ -104,7 +104,7 @@ fun MainUi(mainViewmodel: MainViewmodel, uiState: MainUiState, navController: Na
 
     ) { paddingValues ->
 
-        val cloths by mainViewmodel.cloths.collectAsState(initial = emptyList())
+        val cloths by mainViewmodel.clothes.collectAsState()
 
         ClothsList(
             modifier = Modifier.padding(paddingValues = paddingValues),

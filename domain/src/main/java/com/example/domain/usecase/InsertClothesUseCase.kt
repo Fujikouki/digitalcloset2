@@ -10,8 +10,6 @@ class InsertClothesUseCase(
     suspend operator fun invoke(
         clothesData: ClothesData
     ) {
-        clothesDataRepository.insertClothesData(
-            clothesData
-        )
+        clothesDataRepository.insertClothesData(clothesData)
     }
 }
